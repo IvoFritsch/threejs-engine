@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import Tick from './engine/decorators/Tick'
 import GameElement from './engine/GameElement'
 import GlobalEngineContext from './engine/GlobalEngineContext'
+import Floor from './Floor'
 
 export default class Tree extends GameElement {
 
@@ -18,6 +19,8 @@ export default class Tree extends GameElement {
   light = new THREE.AmbientLight()
   lantern = new THREE.DirectionalLight()
 
+  floor = new Floor()
+
   group = new THREE.Group()
 
   rotandoZ = false
@@ -27,17 +30,16 @@ export default class Tree extends GameElement {
     this.group.add(this.leaves, this.trunk)
     // GlobalEngineContext.engine.info.target é o canvas onde o jogo está sendo renderizado
     GlobalEngineContext.engine.info.target.addEventListener('click', () => this.click())
-    setTimeout(() => this.click(), 3000);
   }
 
   click() {
-    this.rotandoZ = !this.rotandoZ
+    this.state.rotandoZ = !this.state.rotandoZ
   }
 
   @Tick()
   tick() {
     this.group.rotateX(0.01)
-    if(this.rotandoZ) {
+    if(this.state.rotandoZ) {
       this.group.rotateZ(0.01)
     }
   }
@@ -46,7 +48,8 @@ export default class Tree extends GameElement {
     return [
       this.group,
       this.light,
-      this.lantern
+      this.lantern,
+      this.state.rotandoZ && this.floor // Floor é um subcomponente
     ]
   }
 

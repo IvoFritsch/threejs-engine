@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import SmartSceneManipulator, { SupportedRenderReturnType } from './SceneManipulator'
+import SceneManipulator, { SupportedRenderReturnType } from './SceneManipulator'
 
 interface GameElementChild {
   _void: null
@@ -11,7 +11,7 @@ export default class GameElement implements GameElementChild {
   _void: null
   state: any = {}
   props: any = {}
-  sceneManipulator = new SmartSceneManipulator()
+  sceneManipulator = new SceneManipulator()
   child: GameElementChild = this
 
   static tickListeners: (() => void)[] = []
@@ -20,6 +20,8 @@ export default class GameElement implements GameElementChild {
     this.state = new Proxy(this.state, {
       set: (target: any, key: string, value: any) => {
         target[key] = value
+        this.wrapRender()
+        return true
       }
     } as any)
   }
@@ -42,5 +44,8 @@ export default class GameElement implements GameElementChild {
     GameElement.tickListeners.push(fn)
   }
   
+  public clearScene() {
+    this.sceneManipulator.clearScene()
+  }
 
 }

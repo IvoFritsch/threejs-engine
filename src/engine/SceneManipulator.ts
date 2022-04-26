@@ -2,12 +2,13 @@ import Engine from "./Engine";
 import * as THREE from 'three'
 import GameElement from "./GameElement";
 import GlobalEngineContext from "./GlobalEngineContext";
+import { Object3D } from "three";
 
 type ArrayOfElementsOrObject3D = (THREE.Object3D | GameElement)[]
 
 export type SupportedRenderReturnType = GameElement | GameElement[] | THREE.Object3D | THREE.Object3D[] | ArrayOfElementsOrObject3D
 
-export default class SmartSceneManipulator {
+export default class SceneManipulator {
 
   private controlledObjects: ArrayOfElementsOrObject3D = []
 
@@ -26,12 +27,29 @@ export default class SmartSceneManipulator {
 
   private computeAndApplyDiff(newRet: ArrayOfElementsOrObject3D) {
     const addToScene = newRet.filter(e => !this.controlledObjects.includes(e))
-    const removeFromScene = this.controlledObjects.forEach(e => newRet.includes(e))
+    const removeFromScene = this.controlledObjects.filter(e => !newRet.includes(e))
+
+    const threeObjectsToRemove = removeFromScene.filter(e => e instanceof Object3D)
+    const threeObjectsToAdd = addToScene.filter(e => e instanceof Object3D)
+
+    const gameElementsToRemove = removeFromScene.filter(e => e instanceof GameElement)
+    const gameElementsToAdd = addToScene.filter(e => e instanceof GameElement)
+
 
     const scene = GlobalEngineContext.engine.getScene()
-    scene.remove.apply(scene, removeFromScene)
-    scene.add.apply(scene, addToScene)
+    if(threeObjectsToRemove.length) {
+      scene.remove.apply(scene, threeObjectsToRemove)
+    }
+    if(threeObjectsToAdd.length) {
+      scene.add.apply(scene, threeObjectsToAdd)
+    }
+    gameElementsToAdd.forEach((ge: GameElement) => ge.wrapRender())
+    gameElementsToRemove.forEach((ge: GameElement) => ge.clearScene())
     this.controlledObjects = newRet
+  }
+
+  clearScene() {
+    this.computeAndApplyDiff([])
   }
 
 }
