@@ -1,12 +1,13 @@
 import * as THREE from 'three'
 import GameElement from "./GameElement"
 import GlobalEngineContext from './GlobalEngineContext'
+import SceneManipulator from './SceneManipulator'
 
 export default class Engine {
 
   private scene: THREE.Scene
   private clock: THREE.Clock
-  private camera: THREE.Camera
+  private camera: THREE.Camera & { tick?: (elapsedTime?: number) => void }
   private renderer: THREE.WebGLRenderer
   private tickListeners: GameElement[] = []
 
@@ -23,12 +24,14 @@ export default class Engine {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.info.target
     })
+    this.renderer.shadowMap.enabled = true
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
     this.renderer.setSize(this.info.sizes.width, this.info.sizes.height)
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     this.clock = new THREE.Clock()
   }
 
-  setCamera(camera: THREE.Camera) {
+  setCamera(camera: THREE.Camera & { tick?: () => void }) {
     this.camera = camera
     return this
   }
@@ -38,8 +41,8 @@ export default class Engine {
   }
 
   start() {
-    this.rootElement.wrapRender()
     this.rootElement.onEnterScene()
+    this.rootElement.wrapRender()
     this.executeTick()
 
     return this
@@ -47,8 +50,12 @@ export default class Engine {
 
   
   private executeTick() {  
-    this.camera.position.z += 0.01
-    this.tickListeners.forEach(e => e.wrapTick())
+    const elapsedTime = this.clock.getElapsedTime()
+    if(this.camera.tick) {
+      this.camera.tick(elapsedTime)
+    }
+
+    this.tickListeners.forEach(e => e.wrapTick(elapsedTime))
     // Render
     this.renderer.render(this.scene, this.camera)
 
@@ -63,8 +70,6 @@ export default class Engine {
   removeTickListener(element: GameElement) {
     this.tickListeners.splice(this.tickListeners.indexOf(element), 1)
   }
-
-
 }
 
 const emptyAppInfo = (target: HTMLCanvasElement): AppInfo => ({

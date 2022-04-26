@@ -5,7 +5,7 @@ import SceneManipulator, { SupportedRenderReturnType } from './SceneManipulator'
 interface GameElementChild {
   _void: null
   render?: () => SupportedRenderReturnType
-  tick?(): () => void
+  tick?(elapsedTime?: number): () => void
 }
 
 export default class GameElement implements GameElementChild {
@@ -15,12 +15,13 @@ export default class GameElement implements GameElementChild {
   props: any = {}
   sceneManipulator = new SceneManipulator()
   child: GameElementChild = this
+  isInScene: boolean = false
 
   constructor() {
     this.state = new Proxy(this.state, {
       set: (target: any, key: string, value: any) => {
         target[key] = value
-        this.wrapRender()
+        this.isInScene && this.wrapRender()
         return true
       }
     } as any)
@@ -31,22 +32,30 @@ export default class GameElement implements GameElementChild {
 
     const ret = this.child.render()
     this.sceneManipulator.applyRenderReturn(ret)
-
   }
 
-  public wrapTick() {
+  public wrapTick(elapsedTime: number) {
     if(!this.child.tick) return
-    this.child.tick()
+    this.child.tick(elapsedTime)
   }
   
   public onEnterScene() {
+    this.isInScene = true
     GlobalEngineContext.engine.addTickListener(this)
+  }
 
+  protected setCastShadow(v: boolean) {
+    this.sceneManipulator.setCastShadow(v)
+  }
+
+  protected setReceiveShadow(v: boolean) {
+    this.sceneManipulator.setReceiveShadow(v)
   }
 
   public onExitScene() {
     GlobalEngineContext.engine.removeTickListener(this)
     this.sceneManipulator.clearScene()
+    this.isInScene = false
   }
 
 }

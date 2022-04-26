@@ -10,6 +10,8 @@ export type SupportedRenderReturnType = GameElement | GameElement[] | THREE.Obje
 
 export default class SceneManipulator {
 
+  private castShadow: boolean = null
+  private receiveShadow: boolean = null
   private controlledObjects: ArrayOfElementsOrObject3D = []
 
   applyRenderReturn(ret: SupportedRenderReturnType) {
@@ -18,6 +20,7 @@ export default class SceneManipulator {
   }
 
   private normalizeRenderReturn(ret: SupportedRenderReturnType): ArrayOfElementsOrObject3D {
+    if(!ret) return []
     if(ret.constructor.name == 'Array') {
       return ret as ArrayOfElementsOrObject3D
     } else {
@@ -28,9 +31,19 @@ export default class SceneManipulator {
   private computeAndApplyDiff(newRet: ArrayOfElementsOrObject3D) {
     const addToScene = newRet.filter(e => !this.controlledObjects.includes(e))
     const removeFromScene = this.controlledObjects.filter(e => !newRet.includes(e))
-
     const threeObjectsToRemove = removeFromScene.filter(e => e instanceof Object3D)
     const threeObjectsToAdd = addToScene.filter(e => e instanceof Object3D)
+    
+    if(this.castShadow != null || this.receiveShadow != null) {
+      threeObjectsToAdd.forEach((o: Object3D) => {
+        if(!(o as any).isLight) {
+          o.receiveShadow = this.receiveShadow != undefined ? this.receiveShadow : o.receiveShadow
+        }
+        if(!(o as any).isAmbientLight) {
+          o.castShadow = this.castShadow != undefined ? this.castShadow : o.castShadow
+        }
+      })
+    }
 
     const gameElementsToRemove = removeFromScene.filter(e => e instanceof GameElement)
     const gameElementsToAdd = addToScene.filter(e => e instanceof GameElement)
@@ -53,6 +66,14 @@ export default class SceneManipulator {
 
   clearScene() {
     this.computeAndApplyDiff([])
+  }
+
+  setCastShadow(v: boolean) {
+    this.castShadow = v
+  }
+
+  setReceiveShadow(v: boolean) {
+    this.receiveShadow = v
   }
 
 }
