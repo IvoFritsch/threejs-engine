@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import Tick from './engine/decorators/Tick'
 import GameElement from './engine/GameElement'
 import GlobalEngineContext from './engine/GlobalEngineContext'
 import Floor from './Floor'
@@ -36,7 +35,6 @@ export default class Tree extends GameElement {
     this.state.rotandoZ = !this.state.rotandoZ
   }
 
-  @Tick()
   tick() {
     this.group.rotateX(0.01)
     if(this.state.rotandoZ) {

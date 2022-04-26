@@ -8,6 +8,7 @@ export default class Engine {
   private clock: THREE.Clock
   private camera: THREE.Camera
   private renderer: THREE.WebGLRenderer
+  private tickListeners: GameElement[] = []
 
   private rootElement: GameElement = null
   
@@ -38,6 +39,7 @@ export default class Engine {
 
   start() {
     this.rootElement.wrapRender()
+    this.rootElement.onEnterScene()
     this.executeTick()
 
     return this
@@ -46,12 +48,20 @@ export default class Engine {
   
   private executeTick() {  
     this.camera.position.z += 0.01
-    this.rootElement.wrapTick()
+    this.tickListeners.forEach(e => e.wrapTick())
     // Render
     this.renderer.render(this.scene, this.camera)
 
     // Call tick again on the next frame
     window.requestAnimationFrame(() => this.executeTick())
+  }
+
+  addTickListener(element: GameElement) {
+    this.tickListeners.push(element)
+  }
+
+  removeTickListener(element: GameElement) {
+    this.tickListeners.splice(this.tickListeners.indexOf(element), 1)
   }
 
 

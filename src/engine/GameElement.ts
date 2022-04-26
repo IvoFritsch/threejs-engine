@@ -1,9 +1,11 @@
 import * as THREE from 'three'
+import GlobalEngineContext from './GlobalEngineContext'
 import SceneManipulator, { SupportedRenderReturnType } from './SceneManipulator'
 
 interface GameElementChild {
   _void: null
   render?: () => SupportedRenderReturnType
+  tick?(): () => void
 }
 
 export default class GameElement implements GameElementChild {
@@ -13,8 +15,6 @@ export default class GameElement implements GameElementChild {
   props: any = {}
   sceneManipulator = new SceneManipulator()
   child: GameElementChild = this
-
-  static tickListeners: (() => void)[] = []
 
   constructor() {
     this.state = new Proxy(this.state, {
@@ -35,16 +35,17 @@ export default class GameElement implements GameElementChild {
   }
 
   public wrapTick() {
-    //if(!this.child.tick) return
-    GameElement.tickListeners.forEach(fn => fn.apply(this))
-    //this.child.tick()
-  }
-
-  registerTickListener(fn: () => void) {
-    GameElement.tickListeners.push(fn)
+    if(!this.child.tick) return
+    this.child.tick()
   }
   
-  public clearScene() {
+  public onEnterScene() {
+    GlobalEngineContext.engine.addTickListener(this)
+
+  }
+
+  public onExitScene() {
+    GlobalEngineContext.engine.removeTickListener(this)
     this.sceneManipulator.clearScene()
   }
 
