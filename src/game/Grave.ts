@@ -2,10 +2,11 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import GameElement from '../engine/GameElement'
+import DefaultPhysicsElement from '../engine/DefaultPhysicsElement';
 
 export default class Grave extends GameElement {
   
-  grave = new THREE.Mesh(
+  mesh = new THREE.Mesh(
     new THREE.ExtrudeGeometry(
       new THREE.Shape()
         .moveTo(0, 0)
@@ -24,7 +25,9 @@ export default class Grave extends GameElement {
       }),
     new THREE.MeshStandardMaterial({ color: 0x525556 })
   )
-  
+
+  grave = new DefaultPhysicsElement(this.mesh, {mass: 1})
+
   state = {
     soil: null as THREE.Object3D
   }

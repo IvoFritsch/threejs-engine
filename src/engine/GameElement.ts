@@ -1,4 +1,3 @@
-import * as THREE from 'three'
 import GlobalEngineContext from './GlobalEngineContext'
 import SceneManipulator, { SupportedRenderReturnType } from './SceneManipulator'
 
@@ -9,7 +8,7 @@ interface GameElementChild {
   tick?(elapsedTime?: number): () => void
 }
 
-export default class GameElement<StateType = {}> implements GameElementChild {
+export default class GameElement {
 
   _void: null
   props: any = {}
@@ -38,7 +37,7 @@ export default class GameElement<StateType = {}> implements GameElementChild {
           this.isInScene && this.wrapRender()
           return true
         }
-      } as any) as StateType
+      } as any)
     }
     
     this.isInScene = true

@@ -9,7 +9,7 @@ export default class GameCamera extends DefaultPerspectiveCamera {
   constructor() {
     super()
     this.castShadow = true
-    this.position.set( 0, 1, 3 );
+    this.position.set( 3, 1, 0 );
   }
 
   tick() {
