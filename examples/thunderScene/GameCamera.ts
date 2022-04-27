@@ -1,6 +1,6 @@
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import DefaultPerspectiveCamera from "../engine/DefaultPerspectiveCamera";
-import GlobalEngineContext from "../engine/GlobalEngineContext";
+import DefaultPerspectiveCamera from "../../src/engine/DefaultPerspectiveCamera";
+import GlobalEngineContext from "../../src/engine/GlobalEngineContext";
 
 export default class GameCamera extends DefaultPerspectiveCamera {
 
