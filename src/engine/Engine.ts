@@ -1,10 +1,11 @@
 import * as THREE from 'three'
 import GameElement from "./GameElement"
 import GlobalEngineContext from './GlobalEngineContext'
-import SceneManipulator from './SceneManipulator'
+import Physics from './Physics'
 
 export default class Engine {
 
+  private physics: Physics
   private scene: THREE.Scene
   private clock: THREE.Clock
   private camera: THREE.Camera & { tick?: (elapsedTime?: number) => void }
@@ -12,14 +13,17 @@ export default class Engine {
   private tickListeners: GameElement[] = []
 
   private rootElement: GameElement = null
+  private rootElementConstructor: typeof GameElement
+
+  private lastElapsedTime: number = 0
   
   public readonly info: AppInfo
 
-  constructor(target: HTMLCanvasElement, rootElement: typeof GameElement) {
+  constructor(target: HTMLCanvasElement, rootElementConstructor: typeof GameElement) {
     GlobalEngineContext.engine = this
     this.info = emptyAppInfo(target)
     this.scene = new THREE.Scene()
-    this.rootElement = new rootElement()
+    this.rootElementConstructor = rootElementConstructor
     
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.info.target
@@ -31,6 +35,11 @@ export default class Engine {
     this.clock = new THREE.Clock()
   }
 
+  activePhysics() {
+    this.physics = new Physics()
+    return this
+  }
+
   setCamera(camera: THREE.Camera & { tick?: () => void }) {
     this.camera = camera
     return this
@@ -40,7 +49,12 @@ export default class Engine {
     return this.scene
   }
 
+  getPhysics() {
+    return this.physics
+  }
+
   start() {
+    this.rootElement = new this.rootElementConstructor()
     this.rootElement.onEnterScene()
     this.rootElement.wrapRender()
     this.executeTick()
@@ -51,9 +65,14 @@ export default class Engine {
   
   private executeTick() {  
     const elapsedTime = this.clock.getElapsedTime()
+    const deltaElapsedTime = elapsedTime - this.lastElapsedTime
+    this.lastElapsedTime = elapsedTime
+
     if(this.camera.tick) {
       this.camera.tick(elapsedTime)
     }
+
+    this.physics?.tick(elapsedTime, deltaElapsedTime)
 
     this.tickListeners.forEach(e => e.wrapTick(elapsedTime))
     // Render
