@@ -138,9 +138,9 @@ function shapeToGeometry(shape, { flatShading = true } = {}) {
 
 /**
  * Converts a cannon.js body to a three.js mesh group
- * @param {Body} body The cannon.js body
- * @param {Material} material The material the mesh will have
- * @return {Group} The three.js mesh group
+ * @param {CANNON.Body} body The cannon.js body
+ * @param {THREE.Material} material The material the mesh will have
+ * @return {THREE.Group} The three.js mesh group
  */
 export function bodyToMesh(body, material) {
   const group = new THREE.Group()
