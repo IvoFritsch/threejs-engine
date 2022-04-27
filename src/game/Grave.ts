@@ -3,7 +3,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import GameElement from '../engine/GameElement'
 
-export default class GraveDirt extends GameElement {
+export default class Grave extends GameElement {
   
   grave = new THREE.Mesh(
     new THREE.ExtrudeGeometry(
@@ -24,6 +24,10 @@ export default class GraveDirt extends GameElement {
       }),
     new THREE.MeshStandardMaterial({ color: 0x525556 })
   )
+  
+  state = {
+    soil: null as THREE.Object3D
+  }
 
   constructor() {
     super()
@@ -43,10 +47,7 @@ export default class GraveDirt extends GameElement {
       soil.castShadow = true
       soil.receiveShadow = true
       this.state.soil = soil
-  });
-  }
-
-  tick() {
+    });
   }
 
   render() {

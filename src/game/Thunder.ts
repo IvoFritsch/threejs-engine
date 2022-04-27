@@ -4,6 +4,9 @@ import GameElement from "../engine/GameElement"
 export default class Thunder extends GameElement {
 
   thunder = new THREE.PointLight(0x4d88ff, 25, 20)
+  state = {
+    showThunder: true
+  }
 
   constructor() {
     super()
@@ -16,6 +19,9 @@ export default class Thunder extends GameElement {
     this.thunder.shadow.camera.far = 5
     this.thunder.position.y = 5
     this.thunder.visible = false
+    document.getElementById('btn-thunder').addEventListener('click', () => {
+      this.state.showThunder = !this.state.showThunder
+    })
   }
 
   tick(elapsedTime: number) {
@@ -32,6 +38,6 @@ export default class Thunder extends GameElement {
   }
 
   render() {
-    return this.thunder
+    return this.state.showThunder && this.thunder
   }
 }

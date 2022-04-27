@@ -4,28 +4,19 @@ import SceneManipulator, { SupportedRenderReturnType } from './SceneManipulator'
 
 interface GameElementChild {
   _void: null
+  state?: any
   render?: () => SupportedRenderReturnType
   tick?(elapsedTime?: number): () => void
 }
 
-export default class GameElement implements GameElementChild {
+export default class GameElement<StateType = {}> implements GameElementChild {
 
   _void: null
-  state: any = {}
   props: any = {}
   sceneManipulator = new SceneManipulator()
   child: GameElementChild = this
+  readonly elementName = this.child.constructor.name
   isInScene: boolean = false
-
-  constructor() {
-    this.state = new Proxy(this.state, {
-      set: (target: any, key: string, value: any) => {
-        target[key] = value
-        this.isInScene && this.wrapRender()
-        return true
-      }
-    } as any)
-  }
 
   public wrapRender() {
     if(!this.child.render) return
@@ -40,6 +31,16 @@ export default class GameElement implements GameElementChild {
   }
   
   public onEnterScene() {
+    if(this.child.state && this.child.state.constructor.name != 'Proxy') {
+      this.child.state = new Proxy(this.child.state || {}, {
+        set: (target: any, key: string, value: any) => {
+          target[key] = value
+          this.isInScene && this.wrapRender()
+          return true
+        }
+      } as any) as StateType
+    }
+    
     this.isInScene = true
     GlobalEngineContext.engine.addTickListener(this)
   }

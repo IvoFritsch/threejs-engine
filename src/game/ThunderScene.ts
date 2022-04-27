@@ -3,16 +3,17 @@ import Grave from './Grave';
 import * as THREE from 'three'
 import Tree from './Tree';
 import Thunder from './Thunder';
+import GlobalEngineContext from '../engine/GlobalEngineContext';
 
 export default class ThunderScene extends GameElement {
-
-  grave = new Grave()
 
   trees = [
     [-1.2, 2.3], [-0.6, 1], [0.5, 1.6], [1.3, 2.1], [1.22, 1.1],
     [-1, -1], [0.2, -0.75], [1.1, -0.8], [0.5, -1.8], [-0.5, -1.9]
   ].map(p => new Tree(p))
-
+  
+  grave = new Grave()
+  
   ambientLight = new THREE.AmbientLight(0xb9d5ff, 0.3)
 
   moonLight = (() => {
@@ -32,20 +33,37 @@ export default class ThunderScene extends GameElement {
 
   thunder = new Thunder()
 
+  lightsOn = false
+
+  state = {
+    showTrees: true
+  }
+
   constructor() {
     super()
+    GlobalEngineContext.engine.getScene().fog = new THREE.Fog(0x000000, 0.1, 6)
     this.setCastShadow(true)
     this.setReceiveShadow(true)
+    document.getElementById('btn-luzes').addEventListener('click', () => this.switchLights())
+    document.getElementById('btn-trees').addEventListener('click', () => {
+      this.state.showTrees = !this.state.showTrees
+    })
+  }
+
+  switchLights() {
+    this.lightsOn = !this.lightsOn
+    this.moonLight.intensity = this.lightsOn ? 1 : 0.3
   }
 
   render() {
+
     return [
       this.ambientLight,
       this.moonLight,
       this.grave,
       this.plane,
       this.thunder,
-      ...this.trees
+      ...(this.state.showTrees ? this.trees : [])
     ]
   }
 }

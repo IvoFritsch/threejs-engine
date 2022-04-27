@@ -18,8 +18,8 @@ export default class Engine {
   constructor(target: HTMLCanvasElement, rootElement: typeof GameElement) {
     GlobalEngineContext.engine = this
     this.info = emptyAppInfo(target)
-    this.rootElement = new rootElement()
     this.scene = new THREE.Scene()
+    this.rootElement = new rootElement()
     
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.info.target
