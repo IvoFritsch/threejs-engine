@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import GameElement from "./GameElement"
 import GlobalEngineContext from './GlobalEngineContext'
 import Physics from './Physics'
+import Stats from 'three/examples/jsm/libs/stats.module'
 
 export default class Engine {
 
@@ -11,6 +12,7 @@ export default class Engine {
   private camera: THREE.Camera & { tick?: (elapsedTime?: number) => void }
   private renderer: THREE.WebGLRenderer
   private tickListeners: GameElement[] = []
+  private stats: Stats
 
   private rootElement: GameElement = null
   private rootElementConstructor: typeof GameElement
@@ -37,6 +39,13 @@ export default class Engine {
 
   activePhysics() {
     this.physics = new Physics()
+    return this
+  }
+
+  activeStats(mode: 0 | 1 | 2 = 0) {
+    this.stats = Stats()
+    this.stats.setMode(mode)
+    document.body.appendChild(this.stats.dom)
     return this
   }
 
@@ -75,10 +84,11 @@ export default class Engine {
     this.physics?.tick(elapsedTime, deltaElapsedTime)
 
     this.tickListeners.forEach(e => e.wrapTick(elapsedTime))
-    // Render
+
     this.renderer.render(this.scene, this.camera)
 
-    // Call tick again on the next frame
+    this.stats?.update()
+
     window.requestAnimationFrame(() => this.executeTick())
   }
 
