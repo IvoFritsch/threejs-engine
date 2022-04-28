@@ -1,9 +1,9 @@
 import * as THREE from 'three'
 import * as CANNON from 'cannon-es'
 import GameElement from './GameElement'
-import GlobalEngineContext from './GlobalEngineContext'
+import GlobalEngineContext from '../GlobalEngineContext'
 import { threeToCannon } from 'three-to-cannon'
-import { bodyToMesh } from './utils/bodyToMesh'
+import { bodyToMesh } from '../utils/bodyToMesh'
 
 export default class DefaultPhysicsElement extends GameElement {
   mesh: THREE.Object3D
@@ -27,13 +27,13 @@ export default class DefaultPhysicsElement extends GameElement {
 
   onEnterScene() {
     super.onEnterScene()
-    const world = GlobalEngineContext.engine.getPhysics()?.getWorld()
+    const world = GlobalEngineContext.engine.getPhysicsWorld()
     if(world) world.addBody(this.body)
   }
 
   onExitScene() {
     super.onExitScene()
-    const world = GlobalEngineContext.engine.getPhysics()?.getWorld()
+    const world = GlobalEngineContext.engine.getPhysicsWorld()
     if(world) world.removeBody(this.body)
   }
 

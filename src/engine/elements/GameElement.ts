@@ -1,5 +1,5 @@
-import GlobalEngineContext from './GlobalEngineContext'
-import SceneManipulator, { SupportedRenderReturnType } from './SceneManipulator'
+import GlobalEngineContext from '../GlobalEngineContext'
+import SceneManipulator, { SupportedRenderReturnType } from '../SceneManipulator'
 
 interface GameElementChild {
   _void: null

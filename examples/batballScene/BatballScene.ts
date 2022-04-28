@@ -1,4 +1,4 @@
-import GameElement from '../../src/engine/GameElement'
+import GameElement from '../../src/engine/elements/GameElement'
 import Floor from './Floor'
 import Lights from './Lights'
 import Player from './Player'

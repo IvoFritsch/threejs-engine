@@ -1083,6 +1083,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/three@^0.127.1":
+  version "0.127.1"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.127.1.tgz#0978054e5daa6485946a3f1518a76412186ae81f"
+  integrity sha512-e90iYq3zde3axANg7BPZY0fKrez1AzveamIIFk23PMh9WtCx91geokDy+yEAIymdIldgUpvezAP6+zCV3oekXw==
+
 "@types/three@^0.139.0":
   version "0.139.0"
   resolved "https://registry.yarnpkg.com/@types/three/-/three-0.139.0.tgz#69af1f0c52f8eea390f513e05478af1dd7f49e6f"
@@ -1519,6 +1524,11 @@ caniuse-lite@^1.0.30001317:
   version "1.0.30001332"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001332.tgz#39476d3aa8d83ea76359c70302eafdd4a1d727dd"
   integrity sha512-10T30NYOEQtN6C11YGg411yebhvpnC6Z102+B95eAsN0oB6KUs01ivE8u+G6FMIRtIrVlYXhL+LUwQ3/hXwDWw==
+
+cannon-es@^0.19.0:
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/cannon-es/-/cannon-es-0.19.0.tgz#f62fa04097e375877db8f3895f27bb6d499395c0"
+  integrity sha512-fu9UXrjFmAQXq3JyBVPbtyc53suX+QHzikZEJykxroVNnIx1xHq0jZenK8qwhdwbBAtDL9n/47TyPELuSQwZuA==
 
 chalk@^2.0.0:
   version "2.4.2"
@@ -3629,6 +3639,13 @@ terser@^5.10.0, terser@^5.7.2:
     commander "^2.20.0"
     source-map "~0.7.2"
     source-map-support "~0.5.20"
+
+three-to-cannon@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/three-to-cannon/-/three-to-cannon-4.0.2.tgz#5123d897d3dee6bc37e4c48a71dc3e7fe2d87266"
+  integrity sha512-JhhR3+cljNrdwkzgRrENLVFvusojq5YWUmvsngKeLp9tOI8k7+GCjFyE/M2mRpyBz+dtzDxCXBfCs+blEi9uBg==
+  dependencies:
+    "@types/three" "^0.127.1"
 
 three@^0.139.2:
   version "0.139.2"

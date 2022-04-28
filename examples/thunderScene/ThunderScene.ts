@@ -1,4 +1,4 @@
-import GameElement from '../../src/engine/GameElement';
+import GameElement from '../../src/engine/elements/GameElement';
 import Grave from './Grave';
 import * as THREE from 'three'
 import Tree from './Tree';

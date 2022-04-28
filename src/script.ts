@@ -6,7 +6,7 @@ import './style.css'
 const canvas: HTMLCanvasElement = document.querySelector('canvas.webgl')
 
 new Engine(canvas, BatballScene)
-  .activePhysics()
+  .activePhysics({ gravity: [0, -9.82, 0] })
   .activeStats()
   .setCamera(new Camera())
   .start()

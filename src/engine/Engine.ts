@@ -1,11 +1,11 @@
 import * as THREE from 'three'
-import GameElement from './GameElement'
+import GameElement from './elements/GameElement'
 import GlobalEngineContext from './GlobalEngineContext'
-import Physics from './Physics'
+import PhysicsWorld, { PhysicsWorldOptions } from './PhysicsWorld'
 import Stats from 'three/examples/jsm/libs/stats.module'
 
 export default class Engine {
-  private physics: Physics
+  private physicsWorld: PhysicsWorld
   private scene: THREE.Scene
   private clock: THREE.Clock
   private camera: THREE.Camera & { tick?: (elapsedTime?: number) => void }
@@ -36,8 +36,8 @@ export default class Engine {
     this.clock = new THREE.Clock()
   }
 
-  activePhysics() {
-    this.physics = new Physics()
+  activePhysics(options: PhysicsWorldOptions) {
+    this.physicsWorld = new PhysicsWorld(options)
     return this
   }
 
@@ -57,8 +57,8 @@ export default class Engine {
     return this.scene
   }
 
-  getPhysics() {
-    return this.physics
+  getPhysicsWorld() {
+    return this.physicsWorld
   }
 
   start() {
@@ -79,7 +79,7 @@ export default class Engine {
       this.camera.tick(elapsedTime)
     }
 
-    this.physics?.tick(elapsedTime, deltaElapsedTime)
+    this.physicsWorld?.tick(elapsedTime, deltaElapsedTime)
 
     this.tickListeners.forEach(e => e.wrapTick(elapsedTime))
 
