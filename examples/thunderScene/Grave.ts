@@ -1,8 +1,6 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-
 import GameElement from '../../src/engine/GameElement'
-import DefaultPhysicsElement from '../../src/engine/DefaultPhysicsElement';
 
 export default class Grave extends GameElement {
   
@@ -42,7 +40,7 @@ export default class Grave extends GameElement {
     this.grave.rotation.y = Math.PI
 
     const loader = new GLTFLoader();
-    loader.load('/soil.gltf', ({ scene: model }) => {
+    loader.load('/models/soil.gltf', ({ scene: model }) => {
       const soil = model.getObjectByName('Cube001');
       (soil as any).material = new THREE.MeshStandardMaterial({ color: 0x602212 });
       soil.castShadow = true

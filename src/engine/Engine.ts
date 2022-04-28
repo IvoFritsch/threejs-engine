@@ -1,11 +1,10 @@
 import * as THREE from 'three'
-import GameElement from "./GameElement"
+import GameElement from './GameElement'
 import GlobalEngineContext from './GlobalEngineContext'
 import Physics from './Physics'
 import Stats from 'three/examples/jsm/libs/stats.module'
 
 export default class Engine {
-
   private physics: Physics
   private scene: THREE.Scene
   private clock: THREE.Clock
@@ -18,7 +17,7 @@ export default class Engine {
   private rootElementConstructor: typeof GameElement
 
   private lastElapsedTime: number = 0
-  
+
   public readonly info: AppInfo
 
   constructor(target: HTMLCanvasElement, rootElementConstructor: typeof GameElement) {
@@ -26,9 +25,9 @@ export default class Engine {
     this.info = emptyAppInfo(target)
     this.scene = new THREE.Scene()
     this.rootElementConstructor = rootElementConstructor
-    
+
     this.renderer = new THREE.WebGLRenderer({
-      canvas: this.info.target
+      canvas: this.info.target,
     })
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
@@ -71,13 +70,12 @@ export default class Engine {
     return this
   }
 
-  
-  private executeTick() {  
+  private executeTick() {
     const elapsedTime = this.clock.getElapsedTime()
     const deltaElapsedTime = elapsedTime - this.lastElapsedTime
     this.lastElapsedTime = elapsedTime
 
-    if(this.camera.tick) {
+    if (this.camera.tick) {
       this.camera.tick(elapsedTime)
     }
 
@@ -104,9 +102,9 @@ export default class Engine {
 const emptyAppInfo = (target: HTMLCanvasElement): AppInfo => ({
   target,
   sizes: {
-    width: target.clientWidth,
-    height: target.clientHeight
-  }
+    width: window.innerWidth,
+    height: window.innerHeight,
+  },
 })
 
 interface AppInfo {

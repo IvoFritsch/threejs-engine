@@ -1,13 +1,12 @@
-import Engine from "./engine/Engine";
-import ThunderScene from "../examples/thunderScene/ThunderScene";
-import GameCamera from "../examples/thunderScene/GameCamera";
+import Engine from './engine/Engine'
+import BatballScene from '../examples/batballScene/BatballScene'
+import Camera from '../examples/batballScene/Camera'
 import './style.css'
 
 const canvas: HTMLCanvasElement = document.querySelector('canvas.webgl')
 
-new Engine(canvas, ThunderScene)
-    .activePhysics()
-    .activeStats()
-    .setCamera(new GameCamera())
-    .start()
-    
+new Engine(canvas, BatballScene)
+  .activePhysics()
+  .activeStats()
+  .setCamera(new Camera())
+  .start()
