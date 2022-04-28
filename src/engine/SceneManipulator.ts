@@ -56,10 +56,10 @@ export default class SceneManipulator {
       scene.add.apply(scene, threeObjectsToAdd)
     }
     gameElementsToAdd.forEach((ge: GameElement) => {
-      ge.onEnterScene()
+      ge.wrapOnEnterScene()
       ge.wrapRender()
   })
-    gameElementsToRemove.forEach((ge: GameElement) => ge.onExitScene())
+    gameElementsToRemove.forEach((ge: GameElement) => ge.wrapOnExitScene())
     this.controlledObjects = newRet
   }
 

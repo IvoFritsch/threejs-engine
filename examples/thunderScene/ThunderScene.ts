@@ -43,13 +43,20 @@ export default class ThunderScene extends GameElement {
 
   constructor() {
     super()
-    GlobalEngineContext.engine.getScene().fog = new THREE.Fog(0x000000, 0.1, 6)
     this.setCastShadow(true)
     this.setReceiveShadow(true)
     document.getElementById('btn-luzes').addEventListener('click', () => this.switchLights())
     document.getElementById('btn-trees').addEventListener('click', () => {
       this.state.showTrees = !this.state.showTrees
     })
+  }
+
+  onEnterScene() {
+    GlobalEngineContext.engine.getScene().fog = new THREE.Fog(0x000000, 0.1, 6)
+  }
+
+  onExitScene() {
+    GlobalEngineContext.engine.getScene().fog = null
   }
 
   switchLights() {

@@ -6,8 +6,8 @@ import './style.css'
 const canvas: HTMLCanvasElement = document.querySelector('canvas.webgl')
 
 new Engine(canvas, ThunderScene)
-    .activePhysics({gravity: [0, -1, 0]})
-    .activeStats()
+    .enablePhysics({ gravity: [0, -1, 0] })
+    .enableStats()
     .setCamera(new GameCamera())
     .start()
     

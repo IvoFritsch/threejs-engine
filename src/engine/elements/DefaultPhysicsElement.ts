@@ -26,13 +26,11 @@ export default class DefaultPhysicsElement extends GameElement {
   }
 
   onEnterScene() {
-    super.onEnterScene()
     const world = GlobalEngineContext.engine.getPhysicsWorld()
     if(world) world.addBody(this.body)
   }
 
   onExitScene() {
-    super.onExitScene()
     const world = GlobalEngineContext.engine.getPhysicsWorld()
     if(world) world.removeBody(this.body)
   }
