@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import GameElement from "./GameElement";
+import GameElement from "./elements/GameElement";
 import GlobalEngineContext from "./GlobalEngineContext";
 import { Object3D } from "three";
 

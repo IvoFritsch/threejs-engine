@@ -1,11 +1,11 @@
-import GameElement from '../../src/engine/GameElement';
+import GameElement from '../../src/engine/elements/GameElement';
 import Grave from './Grave';
 import * as THREE from 'three'
 import * as CANNON from 'cannon-es'
 import Tree from './Tree';
 import Thunder from './Thunder';
 import GlobalEngineContext from '../../src/engine/GlobalEngineContext';
-import DefaultPhysicsElement from '../../src/engine/DefaultPhysicsElement';
+import DefaultPhysicsElement from '../../src/engine/elements/DefaultPhysicsElement';
 
 export default class ThunderScene extends GameElement {
 

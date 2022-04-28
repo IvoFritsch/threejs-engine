@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-import GameElement from '../../src/engine/GameElement'
-import DefaultPhysicsElement from '../../src/engine/DefaultPhysicsElement';
+import GameElement from '../../src/engine/elements/GameElement'
+import DefaultPhysicsElement from '../../src/engine/elements/DefaultPhysicsElement';
 
 export default class Grave extends GameElement {
   
