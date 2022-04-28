@@ -36,12 +36,12 @@ export default class Engine {
     this.clock = new THREE.Clock()
   }
 
-  activePhysics(options: PhysicsWorldOptions) {
+  enablePhysics(options: PhysicsWorldOptions) {
     this.physicsWorld = new PhysicsWorld(options)
     return this
   }
 
-  activeStats(mode: 0 | 1 | 2 = 0) {
+  enableStats(mode: 0 | 1 | 2 = 0) {
     this.stats = Stats()
     this.stats.setMode(mode)
     document.body.appendChild(this.stats.dom)
@@ -63,7 +63,7 @@ export default class Engine {
 
   start() {
     this.rootElement = new this.rootElementConstructor()
-    this.rootElement.onEnterScene()
+    this.rootElement.wrapOnEnterScene()
     this.rootElement.wrapRender()
     this.executeTick()
 

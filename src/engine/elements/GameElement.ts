@@ -4,6 +4,8 @@ import SceneManipulator, { SupportedRenderReturnType } from '../SceneManipulator
 interface GameElementChild {
   _void: null
   state?: any
+  onEnterScene?: () => () => void
+  onExitScene?: () => {}
   render?: () => SupportedRenderReturnType
   tick?(elapsedTime?: number): () => void
 }
@@ -17,6 +19,8 @@ export default class GameElement {
   readonly elementName = this.child.constructor.name
   isInScene: boolean = false
 
+  beforeExitSceneCallback: () => void = null
+
   public wrapRender() {
     if(!this.child.render) return
 
@@ -29,7 +33,10 @@ export default class GameElement {
     this.child.tick(elapsedTime)
   }
   
-  public onEnterScene() {
+  public wrapOnEnterScene() {
+    if(this.child.onEnterScene) {
+      this.beforeExitSceneCallback = this.child.onEnterScene()
+    }
     if(this.child.state && this.child.state.constructor.name != 'Proxy') {
       this.child.state = new Proxy(this.child.state || {}, {
         set: (target: any, key: string, value: any) => {
@@ -52,7 +59,14 @@ export default class GameElement {
     this.sceneManipulator.setReceiveShadow(v)
   }
 
-  public onExitScene() {
+  public wrapOnExitScene() {
+    if(this.beforeExitSceneCallback) {
+      this.beforeExitSceneCallback()
+      this.beforeExitSceneCallback = null
+    }
+    if(this.child.onExitScene) {
+      this.child.onExitScene()
+    }
     GlobalEngineContext.engine.removeTickListener(this)
     this.sceneManipulator.clearScene()
     this.isInScene = false
