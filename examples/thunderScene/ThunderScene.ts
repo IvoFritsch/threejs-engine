@@ -1,11 +1,11 @@
-import GameElement from '../engine/GameElement';
+import GameElement from '../../src/engine/GameElement';
 import Grave from './Grave';
 import * as THREE from 'three'
 import * as CANNON from 'cannon-es'
 import Tree from './Tree';
 import Thunder from './Thunder';
-import GlobalEngineContext from '../engine/GlobalEngineContext';
-import DefaultPhysicsElement from '../engine/DefaultPhysicsElement';
+import GlobalEngineContext from '../../src/engine/GlobalEngineContext';
+import DefaultPhysicsElement from '../../src/engine/DefaultPhysicsElement';
 
 export default class ThunderScene extends GameElement {
 
@@ -28,15 +28,10 @@ export default class ThunderScene extends GameElement {
     return ret
   })()
 
-  planeMesh = new THREE.Mesh(
+  plane = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(3, 5),
       new THREE.MeshStandardMaterial({ color: 0x4e6a1b })
-  ).translateY(-1.5).rotateX(-Math.PI * 0.5)
-
-  plane = new DefaultPhysicsElement(this.planeMesh, { 
-    shape: new CANNON.Plane(),
-    wireframe: true
-   })
+  ).rotateX(-Math.PI * 0.5)
 
   thunder = new Thunder()
 

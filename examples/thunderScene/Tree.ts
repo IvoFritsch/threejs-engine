@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import GameElement from '../engine/GameElement'
+import GameElement from '../../src/engine/GameElement'
 
 export default class Tree extends GameElement {
 
