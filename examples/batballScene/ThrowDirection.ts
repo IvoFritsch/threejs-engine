@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import GameElement from '../../src/engine/GameElement'
+import GameElement from '../../src/engine/elements/GameElement'
 
 export default class ThrowDirection extends GameElement {
   direction: '+x' | '-x' | '+z' | '-z'

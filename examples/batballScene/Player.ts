@@ -1,6 +1,6 @@
 import * as THREE from 'three'
-import DefaultPhysicsElement from '../../src/engine/DefaultPhysicsElement'
-import GameElement from '../../src/engine/GameElement'
+import DefaultPhysicsElement from '../../src/engine/elements/DefaultPhysicsElement'
+import GameElement from '../../src/engine/elements/GameElement'
 import gsap from 'gsap'
 
 export default class Player extends GameElement {

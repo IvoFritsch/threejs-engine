@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import GameElement from '../../src/engine/GameElement'
+import GameElement from '../../src/engine/elements/GameElement'
 
 export default class Lights extends GameElement {
   ambientLight = new THREE.AmbientLight(0xffffff, 0.7)

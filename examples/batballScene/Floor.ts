@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import * as CANNON from 'cannon-es'
-import DefaultPhysicsElement from '../../src/engine/DefaultPhysicsElement'
-import GameElement from '../../src/engine/GameElement'
+import DefaultPhysicsElement from '../../src/engine/elements/DefaultPhysicsElement'
+import GameElement from '../../src/engine/elements/GameElement'
 
 export default class Floor extends GameElement {
   floorMesh = new THREE.Mesh(
