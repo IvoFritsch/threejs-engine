@@ -24,6 +24,7 @@ export default class ThrowObjects extends GameElement {
     throwDirection.onDirectionChange((direction: '+x' | '-x' | '+z' | '-z') => {
       this.direction = direction
       clearTimeout(this.throwSphereTimeout)
+      this.state.spheres = []
       this.throwSphere()
     })
   }
@@ -39,10 +40,16 @@ export default class ThrowObjects extends GameElement {
       const sphere = this.createSphere()
       this.setSpherePosition(sphere)
 
+      const playerHeight = (
+        this.player.player.mesh as THREE.Mesh<THREE.BoxBufferGeometry>
+      ).geometry.parameters.height
+
       const xDirection = this.player.player.position.x - sphere.position.x
       const zDirection = this.player.player.position.z - sphere.position.z
+      const yDirection = this.getRandomBetween(0, playerHeight)
+
       sphere.body.applyLocalImpulse(
-        new CANNON.Vec3(xDirection, 0, zDirection),
+        new CANNON.Vec3(xDirection, yDirection, zDirection),
         new CANNON.Vec3(0, 0, 0)
       )
 
