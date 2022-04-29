@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import GameElement from '../../src/engine/elements/GameElement'
+import Dolly from './Dolly'
 
 export default class ThrowDirection extends GameElement {
   direction: '+x' | '-x' | '+z' | '-z'
@@ -12,13 +13,31 @@ export default class ThrowDirection extends GameElement {
     new THREE.MeshToonMaterial({ color: 0x156cff })
   )
 
-  constructor() {
+  constructor(dolly: Dolly) {
     super()
+
     this.directionMesh.receiveShadow = true
     this.directionMesh.rotation.x = -Math.PI * 0.5
     this.directionMesh.position.y = 0.001
 
     this.changeDirection()
+
+    dolly.onDollyOutsideAllowedArea(() => this.onPlayerOutsideAllowedArea())
+  }
+
+  async onPlayerOutsideAllowedArea() {
+    clearTimeout(this.changeDirectionTimeout)
+
+    this.directionMesh.material.color.set(0xff4d1a)
+    await this.blinkDirectionMesh(10, 300)
+    this.directionMesh.material.color.set(0x156cff)
+    this.directionMesh.visible = false
+
+    setTimeout(() => {
+      this.directionMesh.visible = true
+      this.direction = undefined
+      this.changeDirection()
+    }, 3000)
   }
 
   changeDirection() {
@@ -26,6 +45,7 @@ export default class ThrowDirection extends GameElement {
     this.changeDirectionAxis()
     this.checkDirectionAxisChange()
 
+    clearTimeout(this.changeDirectionTimeout)
     this.changeDirectionTimeout = setTimeout(() => {
       this.changeDirection()
     }, timeBetweenChanges)
@@ -49,11 +69,11 @@ export default class ThrowDirection extends GameElement {
     }
   }
 
-  blinkDirectionMesh(quantity: number): Promise<void> {
+  blinkDirectionMesh(quantity: number, ms: number = 150): Promise<void> {
     return new Promise(resolve => {
       this.directionMesh.visible = !this.directionMesh.visible
       if (quantity > 0)
-        setTimeout(async () => resolve(await this.blinkDirectionMesh(quantity - 1)), 150)
+        setTimeout(async () => resolve(await this.blinkDirectionMesh(quantity - 1)), ms)
       else {
         this.directionMesh.visible = true
         resolve()

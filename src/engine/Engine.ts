@@ -57,6 +57,14 @@ export default class Engine {
     return this.scene
   }
 
+  getRenderer() {
+    return this.renderer
+  }
+
+  getCamera() {
+    return this.camera
+  }
+
   getPhysicsWorld() {
     return this.physicsWorld
   }
@@ -65,7 +73,7 @@ export default class Engine {
     this.rootElement = new this.rootElementConstructor()
     this.rootElement.wrapOnEnterScene()
     this.rootElement.wrapRender()
-    this.executeTick()
+    this.renderer.setAnimationLoop(() => this.executeTick())
 
     return this
   }
@@ -86,8 +94,6 @@ export default class Engine {
     this.renderer.render(this.scene, this.camera)
 
     this.stats?.update()
-
-    window.requestAnimationFrame(() => this.executeTick())
   }
 
   addTickListener(element: GameElement) {

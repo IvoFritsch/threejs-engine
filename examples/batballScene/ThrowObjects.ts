@@ -4,9 +4,11 @@ import DefaultPhysicsElement from '../../src/engine/elements/DefaultPhysicsEleme
 import GameElement from '../../src/engine/elements/GameElement'
 import ThrowDirection from './ThrowDirection'
 import Player from './Player'
+import Dolly from './Dolly'
 
 export default class ThrowObjects extends GameElement {
-  player: Player
+  dolly: THREE.Object3D
+  player: DefaultPhysicsElement
   direction: '+x' | '-x' | '+z' | '-z'
   throwSphereTimeout: NodeJS.Timeout
 
@@ -17,16 +19,28 @@ export default class ThrowObjects extends GameElement {
     spheres: [],
   }
 
-  constructor(player: Player, throwDirection: ThrowDirection) {
+  constructor(dolly: Dolly, player: Player, throwDirection: ThrowDirection) {
     super()
-    this.player = player
+    this.player = player.getPlayer()
+    this.dolly = dolly.getDolly()
 
-    throwDirection.onDirectionChange((direction: '+x' | '-x' | '+z' | '-z') => {
-      this.direction = direction
-      clearTimeout(this.throwSphereTimeout)
-      this.state.spheres = []
-      this.throwSphere()
-    })
+    throwDirection.onDirectionChange((direction: '+x' | '-x' | '+z' | '-z') =>
+      this.onDirectionChange(direction)
+    )
+
+    dolly.onDollyOutsideAllowedArea(() => this.onPlayerOutsideAllowedArea())
+  }
+
+  onDirectionChange(direction: '+x' | '-x' | '+z' | '-z') {
+    clearTimeout(this.throwSphereTimeout)
+    this.direction = direction
+    this.state.spheres = []
+    this.throwSphere()
+  }
+
+  async onPlayerOutsideAllowedArea() {
+    clearTimeout(this.throwSphereTimeout)
+    this.state.spheres = []
   }
 
   getDistance() {
@@ -40,12 +54,11 @@ export default class ThrowObjects extends GameElement {
       const sphere = this.createSphere()
       this.setSpherePosition(sphere)
 
-      const playerHeight = (
-        this.player.player.mesh as THREE.Mesh<THREE.BoxBufferGeometry>
-      ).geometry.parameters.height
+      const playerHeight = (this.player.mesh as THREE.Mesh<THREE.BoxBufferGeometry>)
+        .geometry.parameters.height
 
-      const xDirection = this.player.player.position.x - sphere.position.x
-      const zDirection = this.player.player.position.z - sphere.position.z
+      const xDirection = this.dolly.position.x - sphere.position.x
+      const zDirection = this.dolly.position.z - sphere.position.z
       const yDirection = this.getRandomBetween(0, playerHeight)
 
       sphere.body.applyLocalImpulse(
@@ -92,7 +105,7 @@ export default class ThrowObjects extends GameElement {
 
     const sphere = new DefaultPhysicsElement(
       new THREE.Mesh(this.sphereGeometry, this.sphereMaterial),
-      { mass: 1, shape: new CANNON.Sphere(radius), wireframe: true }
+      { mass: 1, shape: new CANNON.Sphere(radius) }
     )
     sphere.mesh.scale.set(radius, radius, radius)
     sphere.mesh.castShadow = true

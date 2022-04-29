@@ -9,6 +9,9 @@ export default class DefaultPhysicsElement extends GameElement {
   mesh: THREE.Object3D
   body: CANNON.Body
   bodyWireframe: THREE.Object3D
+  updateBodyToMesh = true
+  updatePosition = true
+  updateRotation = true
 
   position = new THREE.Vector3()
   rotation = new THREE.Euler()
@@ -36,8 +39,13 @@ export default class DefaultPhysicsElement extends GameElement {
   }
 
   tick() {
-    this.setPosition(this.body, this.mesh)
-    this.setQuaternion(this.body, this.mesh)
+    if (this.updateBodyToMesh) {
+      if (this.updatePosition) this.setPosition(this.body, this.mesh)
+      if (this.updateRotation) this.setQuaternion(this.body, this.mesh)
+    } else {
+      if (this.updatePosition) this.setPosition(this.mesh, this.body)
+      if (this.updateRotation) this.setQuaternion(this.mesh, this.body)
+    }
 
     if (this.bodyWireframe) {
       this.setPosition(this.body, this.bodyWireframe)
@@ -53,12 +61,20 @@ export default class DefaultPhysicsElement extends GameElement {
     return [this.mesh, this.bodyWireframe]
   }
 
-  private handleBody({ wireframe, ...bodyOptions }: any) {
+  private handleBody({
+    wireframe,
+    shape,
+    positionOffset,
+    quaternionOffset,
+    ...bodyOptions
+  }: any) {
     this.body = new CANNON.Body(bodyOptions)
 
-    if (!bodyOptions.shape) {
-      const { shape, offset, orientation } = threeToCannon(this.mesh as any)
-      this.body.addShape(shape, offset, orientation)
+    if (shape) {
+      this.body.addShape(shape, positionOffset, quaternionOffset)
+    } else {
+      const result = threeToCannon(this.mesh as any)
+      this.body.addShape(result.shape, result.offset, result.orientation)
     }
 
     if (wireframe) {
