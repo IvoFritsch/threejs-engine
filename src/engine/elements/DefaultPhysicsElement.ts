@@ -1,17 +1,16 @@
 import * as THREE from 'three'
 import * as CANNON from 'cannon-es'
 import GameElement from './GameElement'
-import GlobalEngineContext from '../GlobalEngineContext'
 import { threeToCannon } from 'three-to-cannon'
 import { bodyToMesh } from '../utils/bodyToMesh'
 
 export default class DefaultPhysicsElement extends GameElement {
-  mesh: THREE.Object3D
-  body: CANNON.Body
-  bodyWireframe: THREE.Object3D
+  private mesh: THREE.Object3D
+  private body: CANNON.Body
+  private bodyWireframe: THREE.Object3D
 
-  position = new THREE.Vector3()
-  rotation = new THREE.Euler()
+  protected position = new THREE.Vector3()
+  protected rotation = new THREE.Euler()
 
   constructor(mesh: THREE.Object3D, bodyOptions: any = {}) {
     super()
@@ -26,12 +25,12 @@ export default class DefaultPhysicsElement extends GameElement {
   }
 
   onEnterScene() {
-    const world = GlobalEngineContext.engine.getPhysicsWorld()
+    const world = this.engine.getPhysicsWorld()
     if(world) world.addBody(this.body)
   }
 
   onExitScene() {
-    const world = GlobalEngineContext.engine.getPhysicsWorld()
+    const world = this.engine.getPhysicsWorld()
     if(world) world.removeBody(this.body)
   }
 

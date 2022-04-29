@@ -1,8 +1,7 @@
-import GlobalEngineContext from '../GlobalEngineContext'
+import Engine from '../Engine'
 import SceneManipulator, { SupportedRenderReturnType } from '../SceneManipulator'
 
 interface GameElementChild {
-  _void: null
   state?: any
   onEnterScene?: () => () => void
   onExitScene?: () => {}
@@ -11,19 +10,23 @@ interface GameElementChild {
 }
 
 export default class GameElement {
+  private renderTimeout: NodeJS.Timeout = null
 
-  _void: null
-  props: any = {}
-  sceneManipulator = new SceneManipulator()
-  child: GameElementChild = this
-  readonly elementName = this.child.constructor.name
-  isInScene: boolean = false
+  public engine: Engine
+  private sceneManipulator = new SceneManipulator(this)
+  private child: GameElementChild = this as GameElementChild
+  private readonly elementName = this.child.constructor.name
+  protected isInScene: boolean = false
 
   beforeExitSceneCallback: () => void = null
 
-  public wrapRender() {
-    if(!this.child.render) return
+  public requestRender() {
+    clearTimeout(this.renderTimeout)
+    this.renderTimeout = setTimeout(this.wrapRender.bind(this), 15);
+  }
 
+  private wrapRender() {
+    if(!this.child.render) return
     const ret = this.child.render()
     this.sceneManipulator.applyRenderReturn(ret)
   }
@@ -41,14 +44,14 @@ export default class GameElement {
       this.child.state = new Proxy(this.child.state || {}, {
         set: (target: any, key: string, value: any) => {
           target[key] = value
-          this.isInScene && this.wrapRender()
+          this.isInScene && this.requestRender()
           return true
         }
       } as any)
     }
     
     this.isInScene = true
-    GlobalEngineContext.engine.addTickListener(this)
+    this.engine.addTickListener(this)
   }
 
   protected setCastShadow(v: boolean) {
@@ -67,9 +70,22 @@ export default class GameElement {
     if(this.child.onExitScene) {
       this.child.onExitScene()
     }
-    GlobalEngineContext.engine.removeTickListener(this)
+    this.engine.removeTickListener(this)
     this.sceneManipulator.clearScene()
     this.isInScene = false
+  }
+
+  public getElementName() {
+    return this.elementName
+  }
+
+  public setEngine(engine: Engine) {
+    this.engine = engine
+    this.sceneManipulator.setEngine(engine)
+  }
+
+  public getEngine() {
+    return this.engine
   }
 
 }

@@ -1,13 +1,16 @@
 import Engine from "./engine/Engine";
 import ThunderScene from "../examples/thunderScene/ThunderScene";
-import GameCamera from "../examples/thunderScene/GameCamera";
 import './style.css'
+import Base from "../examples/testePit/Base";
+import DefaultOrbitCamera from "./engine/DefaultOrbitCamera";
 
 const canvas: HTMLCanvasElement = document.querySelector('canvas.webgl')
 
-new Engine(canvas, ThunderScene)
-    .enablePhysics({ gravity: [0, -1, 0] })
+const engine = new Engine(canvas, Base)
+    //.enablePhysics({ gravity: [0, -1, 0] })
     .enableStats()
-    .setCamera(new GameCamera())
-    .start()
+
+engine.setCamera(new DefaultOrbitCamera(engine))
+
+engine.start()
     

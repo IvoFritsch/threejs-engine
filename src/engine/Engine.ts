@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import GameElement from "./elements/GameElement"
-import GlobalEngineContext from './GlobalEngineContext'
 import PhysicsWorld, { PhysicsWorldOptions } from './PhysicsWorld'
 import Stats from 'three/examples/jsm/libs/stats.module'
 
@@ -22,7 +21,6 @@ export default class Engine {
   public readonly info: AppInfo
 
   constructor(target: HTMLCanvasElement, rootElementConstructor: typeof GameElement) {
-    GlobalEngineContext.engine = this
     this.info = emptyAppInfo(target)
     this.scene = new THREE.Scene()
     this.rootElementConstructor = rootElementConstructor
@@ -64,8 +62,9 @@ export default class Engine {
 
   start() {
     this.rootElement = new this.rootElementConstructor()
+    this.rootElement.setEngine(this)
     this.rootElement.wrapOnEnterScene()
-    this.rootElement.wrapRender()
+    this.rootElement.requestRender()
     this.executeTick()
 
     return this
@@ -82,11 +81,8 @@ export default class Engine {
     }
 
     this.physicsWorld?.tick(elapsedTime, deltaElapsedTime)
-
     this.tickListeners.forEach(e => e.wrapTick(elapsedTime))
-
     this.renderer.render(this.scene, this.camera)
-
     this.stats?.update()
 
     window.requestAnimationFrame(() => this.executeTick())
