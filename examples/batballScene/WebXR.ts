@@ -1,13 +1,13 @@
 import * as THREE from 'three'
-import GlobalEngineContext from '../../src/engine/GlobalEngineContext'
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js'
+import Engine from '../../src/engine/Engine'
 
 export default class WebXR {
   private renderer: THREE.WebGLRenderer
   private onSessionStartListeners: Function[] = []
 
-  constructor() {
-    this.renderer = GlobalEngineContext.engine.getRenderer()
+  constructor(engine: Engine) {
+    this.renderer = engine.getRenderer()
     this.renderer.xr.enabled = true
     this.renderer.xr.addEventListener('sessionstart', () =>
       this.onSessionStartListeners.forEach(listener => listener())

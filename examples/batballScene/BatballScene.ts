@@ -9,14 +9,27 @@ import ThrowObjects from './ThrowObjects'
 import WebXR from './WebXR'
 
 export default class BatballScene extends GameElement {
-  webxr = new WebXR()
-  lights = new Lights()
-  floor = new Floor()
-  bat = new Bat()
-  player = new Player()
-  dolly = new Dolly(this.webxr, this.player, this.bat)
-  throwDirection = new ThrowDirection(this.dolly)
-  throwObjects = new ThrowObjects(this.dolly, this.player, this.throwDirection)
+  webxr: WebXR
+  lights: Lights
+  floor: Floor
+  bat: Bat
+  player: Player
+  dolly: Dolly
+  throwDirection: ThrowDirection
+  throwObjects: ThrowObjects
+
+  onEnterScene() {
+    this.webxr = new WebXR(this.engine)
+    this.lights = new Lights()
+    this.floor = new Floor()
+    this.bat = new Bat()
+    this.player = new Player()
+    this.dolly = new Dolly(this.webxr, this.player, this.bat)
+    this.throwDirection = new ThrowDirection(this.dolly)
+    this.throwObjects = new ThrowObjects(this.dolly, this.player, this.throwDirection)
+
+    this.requestRender()
+  }
 
   render() {
     return [

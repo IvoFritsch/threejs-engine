@@ -12,8 +12,8 @@ export default class DefaultPhysicsElement extends GameElement {
   updatePosition = true
   updateRotation = true
 
-  protected position = new THREE.Vector3()
-  protected rotation = new THREE.Euler()
+  position = new THREE.Vector3()
+  rotation = new THREE.Euler()
 
   constructor(mesh: THREE.Object3D, bodyOptions: any = {}) {
     super()

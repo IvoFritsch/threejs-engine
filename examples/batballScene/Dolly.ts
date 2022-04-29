@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import * as CANNON from 'cannon-es'
 import GameElement from '../../src/engine/elements/GameElement'
-import GlobalEngineContext from '../../src/engine/GlobalEngineContext'
 import DefaultPhysicsElement from '../../src/engine/elements/DefaultPhysicsElement'
 import Bat from './Bat'
 import Player from './Player'
@@ -52,7 +51,7 @@ export default class Dolly extends GameElement {
   }
 
   private onSessionStart() {
-    const camera = GlobalEngineContext.engine.getCamera()
+    const camera = this.engine.getCamera()
     const player = this.player.mesh
     const bat = this.bat.getBat()
     const grip = this.webxr.getGrip()
