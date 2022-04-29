@@ -8,7 +8,7 @@ export default class PhysicsWorld extends CANNON.World{
 
   constructor(options: PhysicsWorldOptions) {
     super()
-    this.gravity.set.apply(this.gravity, options.gravity)
+    this.gravity.set(...options.gravity)
     this.allowSleep = true
   }
 

@@ -3,7 +3,6 @@ import Grave from './Grave';
 import * as THREE from 'three'
 import Tree from './Tree';
 import Thunder from './Thunder';
-import GlobalEngineContext from '../../src/engine/GlobalEngineContext';
 
 export default class ThunderScene extends GameElement {
 
@@ -46,7 +45,7 @@ export default class ThunderScene extends GameElement {
   }
 
   onEnterScene() {
-    GlobalEngineContext.engine.getScene().fog = new THREE.Fog(0x000000, 0.1, 6)
+    this.engine.getScene().fog = new THREE.Fog(0x000000, 0.1, 6)
 
     const btnLuzesCallback = () => this.switchLights()
     const btnTreesCallback = () => this.state.showTrees = !this.state.showTrees
@@ -60,7 +59,7 @@ export default class ThunderScene extends GameElement {
   }
 
   onExitScene() {
-    GlobalEngineContext.engine.getScene().fog = null
+    this.engine.getScene().fog = null
   }
 
   switchLights() {
@@ -76,7 +75,7 @@ export default class ThunderScene extends GameElement {
       this.grave,
       this.plane,
       this.thunder,
-      ...(this.state.showTrees ? this.trees : [])
+      this.state.showTrees && this.trees
     ]
   }
 }
