@@ -3,6 +3,7 @@ import Grave from './Grave';
 import * as THREE from 'three'
 import Tree from './Tree';
 import Thunder from './Thunder';
+
 export default class ThunderScene extends GameElement {
 
   trees = [
