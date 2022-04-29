@@ -59,7 +59,7 @@ export default class Dolly extends GameElement {
     grip.add(bat)
 
     this.state.grip = new DefaultPhysicsElement(grip, {
-      wireframe: false,
+      wireframe: true,
       shape: new CANNON.Cylinder(0.06, 0.06, 1.33),
       positionOffset: new CANNON.Vec3(0, 0, -0.48),
       quaternionOffset: new CANNON.Quaternion(0.7068252, 0, 0, 0.7073883),

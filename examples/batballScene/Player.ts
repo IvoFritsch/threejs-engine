@@ -7,7 +7,7 @@ export default class Player extends GameElement {
     new THREE.BoxBufferGeometry(0.45, 1.6, 0.2),
     new THREE.MeshToonMaterial({ color: 0x00ff00 })
   )
-  private player = new DefaultPhysicsElement(this.playerMesh, { wireframe: false })
+  private player = new DefaultPhysicsElement(this.playerMesh, { wireframe: true })
 
   private onPlayerCollisionListeners: Function[] = []
 
