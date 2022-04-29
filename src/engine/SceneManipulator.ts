@@ -21,6 +21,7 @@ export default class SceneManipulator {
   private normalizeRenderReturn(ret: SupportedRenderReturnType): ArrayOfElementsOrObject3D {
     if(!ret) return []
     if(ret.constructor.name == 'Array') {
+      ret = (ret as Array<any>).flat(1)
       return ret as ArrayOfElementsOrObject3D
     } else {
       return [ret as (THREE.Object3D | GameElement)]

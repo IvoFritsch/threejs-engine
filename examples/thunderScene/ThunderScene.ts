@@ -78,7 +78,7 @@ export default class ThunderScene extends GameElement {
       this.grave,
       this.plane,
       this.thunder,
-      ...(this.state.showTrees ? this.trees : [])
+      this.state.showTrees && this.trees
     ]
   }
 }
