@@ -1,11 +1,12 @@
 import GameElement from "../../src/engine/elements/GameElement";
 import * as THREE from 'three'
-import Quarto from "./Quarto";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { MathUtils, Object3D } from "three";
+import { MathUtils, MeshStandardMaterial, Object3D } from "three";
 import Tree from "../thunderScene/Tree";
 import KeyboardKey from "../../src/engine/controls/KeyboardKey";
 import { WhileDown } from "../../src/engine/controls/WhileKey";
+import DefaultGLTFElement from "../../src/engine/elements/DefaultGLTFElement";
+import Veiculo from "./Veiculo";
 
 export default class Base extends GameElement {
 
@@ -22,35 +23,22 @@ export default class Base extends GameElement {
 
   axesHelper = new THREE.AxesHelper( 5 );
 
-  state = {
-    campfire: null as Object3D,
-    tree: null as Object3D,
-  }
+  campfire = new DefaultGLTFElement('/campfire.glb', ({ helpers: { traverseMaterials } }) => {
+    traverseMaterials((m: THREE.MeshStandardMaterial) => m.metalness = 0)
+  })
 
-  @WhileDown('Enter') rotateTree() {
-    this.state.tree && this.state.tree.rotateY(0.03)
-  }
-  
-  @WhileDown('w') moveForward() {
-    this.state.tree && this.state.tree.translateX(0.03)
-  }
+  tree = new DefaultGLTFElement('/tree.glb', ({ model, helpers: { traverseMaterials } }) => {
+    traverseMaterials((m: THREE.MeshStandardMaterial) => m.metalness = 0)
+    model.scale.y = 0.75
+    model.translateX(1.2).translateZ(-0.8)
+  })
+
+  veiculo = new Veiculo(3, 1)
 
   constructor() {
     super()
     this.setCastShadow(true)
     this.setReceiveShadow(true)
-    //this.sunLight.shadow.mapSize.set(2048, 2048)
-    const loader = new GLTFLoader();
-    loader.load('/campfire.glb', ({ scene: model, scenes }) => {
-      model.traverse((c: any) => c.material ? c.material.metalness = 0 : null)
-      this.state.campfire = model
-    });
-    loader.load('/tree.glb', ({ scene: model, scenes }) => {
-      model.traverse((c: any) => c.material ? c.material.metalness = 0 : null)
-      model.scale.y = 0.75
-      model.translateX(1.2).translateZ(-0.8)
-      this.state.tree = model
-    });
   }
 
 
@@ -64,9 +52,10 @@ export default class Base extends GameElement {
     return [
       this.ambientLight,
       [this.sunLight], //, new THREE.DirectionalLightHelper(this.sunLight)],
-      this.state.campfire,
-      this.state.tree,
+      this.campfire,
+      this.tree,
       //this.axesHelper,
+      this.veiculo,
       this.chao
     ]
   }

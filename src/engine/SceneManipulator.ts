@@ -13,12 +13,13 @@ export default class SceneManipulator {
   private receiveShadow: boolean = null
   private controlledObjects: ArrayOfElementsOrObject3D = []
   private engine: Engine
-  private father: GameElement
+  private parent: GameElement
 
-  private finishedApplyingShadowConfigs = false
+  private lastApplyedCastShadow = this.castShadow
+  private lastApplyedReceiveShadow = this.receiveShadow
 
   constructor(father: GameElement) {
-    this.father = father
+    this.parent = father
   }
 
   applyRenderReturn(ret: SupportedRenderReturnType) {
@@ -41,22 +42,10 @@ export default class SceneManipulator {
     const removeFromScene = this.controlledObjects.filter(e => !newRet.includes(e))
     const threeObjectsToRemove = removeFromScene.filter(e => e instanceof Object3D)
     const threeObjectsToAdd = addToScene.filter(e => e instanceof Object3D)
-    if(!this.finishedApplyingShadowConfigs) {
-      threeObjectsToAdd.forEach((o: Object3D) => {
-        o.traverse(e => {
-          if(!(e as any).isLight) {
-            e.receiveShadow = this.receiveShadow != undefined ? this.receiveShadow : e.receiveShadow
-          }
-          if(!(e as any).isAmbientLight) {
-            e.castShadow = this.castShadow != undefined ? this.castShadow : e.castShadow
-          }
-        })
-      })
-      this.finishedApplyingShadowConfigs = true
-    }
 
     const gameElementsToRemove = removeFromScene.filter(e => e instanceof GameElement)
     const gameElementsToAdd = addToScene.filter(e => e instanceof GameElement)
+    let anythingChanged = false
 
     const scene = this.engine.getScene()
     if(threeObjectsToRemove.length) {
@@ -67,11 +56,33 @@ export default class SceneManipulator {
     }
     gameElementsToAdd.forEach((ge: GameElement) => {
       ge.setEngine(this.engine)
+      ge.setParent(this.parent)
       ge.wrapOnEnterScene()
       ge.requestRender()
     })
     gameElementsToRemove.forEach((ge: GameElement) => ge.wrapOnExitScene())
+    anythingChanged = !!(threeObjectsToRemove.length | threeObjectsToAdd.length | gameElementsToAdd.length | gameElementsToRemove.length)
     this.controlledObjects = newRet
+    if(anythingChanged) this.applyShadowsConfig()
+  }
+
+  applyShadowsConfig() {
+    this.controlledObjects.filter(o => o instanceof Object3D).forEach((o: Object3D) => {
+      o.traverse(e => {
+        if(!(e as any).isLight) {
+          e.receiveShadow = this.receiveShadow != undefined ? this.receiveShadow : e.receiveShadow
+        }
+        if(!(e as any).isAmbientLight) {
+          e.castShadow = this.castShadow != undefined ? this.castShadow : e.castShadow
+        }
+      })
+    })
+    this.controlledObjects.filter(o => o instanceof GameElement).forEach((o: GameElement) => {
+      o.setCastShadow(this.castShadow)
+      o.setReceiveShadow(this.castShadow)
+    })
+    this.lastApplyedCastShadow = this.castShadow
+    this.lastApplyedReceiveShadow = this.receiveShadow
   }
 
   clearScene() {
@@ -80,14 +91,20 @@ export default class SceneManipulator {
 
   setCastShadow(v: boolean) {
     this.castShadow = v
-    this.finishedApplyingShadowConfigs = false
-    this.father.requestRender()
+    this.parent.requestRender()
   }
 
   setReceiveShadow(v: boolean) {
     this.receiveShadow = v
-    this.finishedApplyingShadowConfigs = false
-    this.father.requestRender()
+    this.parent.requestRender()
+  }
+  
+  getCastShadow() {
+    return this.castShadow
+  }
+  
+  getReceiveShadow() {
+    return this.receiveShadow
   }
 
   setEngine(engine: Engine) {
