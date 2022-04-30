@@ -66,8 +66,9 @@ export default class Dolly extends GameElement {
       },
       {
         wireframe: true,
+        renderMesh: false,
         updatePosition: false,
-        updateRotation: false,
+        updateDirection: 'meshToBody',
       }
     )
 
@@ -114,13 +115,6 @@ export default class Dolly extends GameElement {
         this.state.grip.mesh.position.x + this.dolly.position.x,
         this.state.grip.mesh.position.y + this.dolly.position.y,
         this.state.grip.mesh.position.z + this.dolly.position.z
-      )
-
-      this.state.grip.body.quaternion.set(
-        this.state.grip.mesh.quaternion.x,
-        this.state.grip.mesh.quaternion.y,
-        this.state.grip.mesh.quaternion.z,
-        this.state.grip.mesh.quaternion.w
       )
 
       this.player.body.position.set(

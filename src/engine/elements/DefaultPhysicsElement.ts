@@ -17,6 +17,13 @@ interface DefaultPhysicsElementOptions {
   updateDirection?: 'bodyToMesh' | 'meshToBody'
 }
 
+const defaultOptions: DefaultPhysicsElementOptions = {
+  updateDirection: 'bodyToMesh',
+  updatePosition: true,
+  updateRotation: true,
+  renderMesh: true,
+}
+
 export default class DefaultPhysicsElement extends GameElement {
   mesh: THREE.Object3D
   body: CANNON.Body
@@ -29,16 +36,11 @@ export default class DefaultPhysicsElement extends GameElement {
   constructor(
     mesh: THREE.Object3D,
     bodyOptions: BodyOptions = {},
-    options: DefaultPhysicsElementOptions = {
-      updateDirection: 'bodyToMesh',
-      updatePosition: true,
-      updateRotation: true,
-      renderMesh: true,
-    }
+    options: DefaultPhysicsElementOptions = {}
   ) {
     super()
     this.mesh = mesh
-    this.options = options
+    this.options = { ...defaultOptions, ...options }
     this.handleBody(bodyOptions)
 
     this.setPosition(this.mesh, this.body)

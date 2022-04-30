@@ -10,6 +10,8 @@ export default class Player extends GameElement {
   private player = new DefaultPhysicsElement(this.playerMesh, undefined, {
     wireframe: true,
     renderMesh: false,
+    updatePosition: false,
+    updateDirection: 'meshToBody',
   })
 
   private onPlayerCollisionListeners: Function[] = []
