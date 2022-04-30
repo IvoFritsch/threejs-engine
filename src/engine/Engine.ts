@@ -26,7 +26,8 @@ export default class Engine {
     this.rootElementConstructor = rootElementConstructor
     
     this.renderer = new THREE.WebGLRenderer({
-      canvas: this.info.target
+      canvas: this.info.target,
+      antialias: true
     })
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap

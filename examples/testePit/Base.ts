@@ -3,6 +3,9 @@ import * as THREE from 'three'
 import Quarto from "./Quarto";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { MathUtils, Object3D } from "three";
+import Tree from "../thunderScene/Tree";
+import KeyboardKey from "../../src/engine/controls/KeyboardKey";
+import { WhileDown } from "../../src/engine/controls/WhileKey";
 
 export default class Base extends GameElement {
 
@@ -15,30 +18,41 @@ export default class Base extends GameElement {
                 .translateY(20)
                 .translateX(20)
                 .translateZ(20)
-  ambientLight = new THREE.AmbientLight(0xffffff, 0.9)
+  ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
 
   axesHelper = new THREE.AxesHelper( 5 );
 
   state = {
-    campfire: null as Object3D
+    campfire: null as Object3D,
+    tree: null as Object3D,
+  }
+
+  @WhileDown('Enter') rotateTree() {
+    this.state.tree && this.state.tree.rotateY(0.03)
+  }
+  
+  @WhileDown('w') moveForward() {
+    this.state.tree && this.state.tree.translateX(0.03)
   }
 
   constructor() {
     super()
     this.setCastShadow(true)
     this.setReceiveShadow(true)
+    //this.sunLight.shadow.mapSize.set(2048, 2048)
     const loader = new GLTFLoader();
     loader.load('/campfire.glb', ({ scene: model, scenes }) => {
-      console.log(model, scenes);
       model.traverse((c: any) => c.material ? c.material.metalness = 0 : null)
       this.state.campfire = model
-      // const soil = model.getObjectByName('Cube001');
-      // (soil as any).material = new THREE.MeshStandardMaterial({ color: 0x602212 });
-      // soil.castShadow = true
-      // soil.receiveShadow = true
-      // this.state.soil = soil
+    });
+    loader.load('/tree.glb', ({ scene: model, scenes }) => {
+      model.traverse((c: any) => c.material ? c.material.metalness = 0 : null)
+      model.scale.y = 0.75
+      model.translateX(1.2).translateZ(-0.8)
+      this.state.tree = model
     });
   }
+
 
   onEnterScene() {
     this.engine.getScene().fog = new THREE.Fog(0x000000, 0, 25)
@@ -46,13 +60,13 @@ export default class Base extends GameElement {
     // return () => clearInterval(int)
   }
 
-
   render() {
     return [
       this.ambientLight,
-      [this.sunLight, new THREE.DirectionalLightHelper(this.sunLight)],
+      [this.sunLight], //, new THREE.DirectionalLightHelper(this.sunLight)],
       this.state.campfire,
-      this.axesHelper,
+      this.state.tree,
+      //this.axesHelper,
       this.chao
     ]
   }

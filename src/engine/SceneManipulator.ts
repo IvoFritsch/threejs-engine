@@ -41,7 +41,6 @@ export default class SceneManipulator {
     const removeFromScene = this.controlledObjects.filter(e => !newRet.includes(e))
     const threeObjectsToRemove = removeFromScene.filter(e => e instanceof Object3D)
     const threeObjectsToAdd = addToScene.filter(e => e instanceof Object3D)
-    console.log(this.finishedApplyingShadowConfigs)
     if(!this.finishedApplyingShadowConfigs) {
       threeObjectsToAdd.forEach((o: Object3D) => {
         o.traverse(e => {

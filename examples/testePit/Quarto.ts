@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { MathUtils } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
-export default class Quarto extends GameElement {
+export default class Quarto {
 
   parede1 = new THREE.Mesh(
     new THREE.PlaneGeometry(3,3)
@@ -21,7 +21,7 @@ export default class Quarto extends GameElement {
   luzHelper = new THREE.PointLightHelper(this.luz)
 
   constructor() {
-    super()
+    //super()
     const loader = new GLTFLoader();
     loader.load('/soil.gltf', ({ scene: model }) => {
       const soil = model.getObjectByName('Cube001');

@@ -1,3 +1,5 @@
+import KeyboardKey from '../controls/KeyboardKey'
+import { KeyCode } from '../controls/KeyCode'
 import Engine from '../Engine'
 import SceneManipulator, { SupportedRenderReturnType } from '../SceneManipulator'
 
@@ -18,6 +20,8 @@ export default class GameElement {
   private readonly elementName = this.child.constructor.name
   protected isInScene: boolean = false
 
+  private static decoratorsInGameElements = new Map<typeof GameElement, SubClassDecorators>()
+
   beforeExitSceneCallback: () => void = null
 
   public requestRender() {
@@ -32,8 +36,28 @@ export default class GameElement {
   }
 
   public wrapTick(elapsedTime: number) {
-    if(!this.child.tick) return
-    this.child.tick(elapsedTime)
+    const childDecorators = GameElement.decoratorsInGameElements.get(this.constructor as typeof GameElement)
+    if(childDecorators) {
+      //console.log(childDecorators) //this.constructor, GameElement.decoratorsInGameElements)
+      if(childDecorators.whileDown) {
+        childDecorators.whileDown.forEach((member, k) => {
+          if(KeyboardKey.isDown(k)) {
+            (this.child as any)[member](elapsedTime)
+          }
+        })
+      }
+      if(childDecorators.whileUp) {
+        childDecorators.whileUp.forEach((member, k) => {
+          if(KeyboardKey.isUp(k)) {
+            (this.child as any)[member](elapsedTime)
+          }
+        })
+      }
+    }
+
+    if(this.child.tick) {
+      this.child.tick(elapsedTime)
+    }
   }
   
   public wrapOnEnterScene() {
@@ -88,4 +112,25 @@ export default class GameElement {
     return this.engine
   }
 
+  public static registerWhileKeySubclassFunction(
+    subclass: typeof GameElement, 
+    key: KeyCode, 
+    memberName: string, 
+    type: 'whileUp' | 'whileDown'
+  ) {
+    let decorators = GameElement.decoratorsInGameElements.get(subclass)
+    if(!decorators) {
+      decorators = {}
+      GameElement.decoratorsInGameElements.set(subclass, decorators)
+    }
+    if(!decorators[type]) {
+      decorators[type] = new Map()
+    }
+    decorators[type].set(key, memberName)
+  }
+}
+
+interface SubClassDecorators {
+  whileUp?: Map<KeyCode, string>
+  whileDown?: Map<KeyCode, string>
 }
