@@ -1,10 +1,9 @@
 import * as THREE from 'three'
-import GameElement from "./elements/GameElement"
+import GameElement from './elements/GameElement'
 import PhysicsWorld, { PhysicsWorldOptions } from './PhysicsWorld'
 import Stats from 'three/examples/jsm/libs/stats.module'
 
 export default class Engine {
-
   private physicsWorld: PhysicsWorld
   private scene: THREE.Scene
   private clock: THREE.Clock
@@ -17,14 +16,14 @@ export default class Engine {
   private rootElementConstructor: typeof GameElement
 
   private lastElapsedTime: number = 0
-  
+
   public readonly info: AppInfo
 
   constructor(target: HTMLCanvasElement, rootElementConstructor: typeof GameElement) {
     this.info = emptyAppInfo(target)
     this.scene = new THREE.Scene()
     this.rootElementConstructor = rootElementConstructor
-    
+
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.info.target,
       antialias: true
@@ -57,6 +56,14 @@ export default class Engine {
     return this.scene
   }
 
+  getRenderer() {
+    return this.renderer
+  }
+
+  getCamera() {
+    return this.camera
+  }
+
   getPhysicsWorld() {
     return this.physicsWorld
   }
@@ -66,18 +73,17 @@ export default class Engine {
     this.rootElement.setEngine(this)
     this.rootElement.wrapOnEnterScene()
     this.rootElement.requestRender()
-    this.executeTick()
+    this.renderer.setAnimationLoop(() => this.executeTick())
 
     return this
   }
 
-  
-  private executeTick() {  
+  private executeTick() {
     const elapsedTime = this.clock.getElapsedTime()
     const deltaElapsedTime = elapsedTime - this.lastElapsedTime
     this.lastElapsedTime = elapsedTime
 
-    if(this.camera.tick) {
+    if (this.camera.tick) {
       this.camera.tick(elapsedTime)
     }
 
@@ -85,8 +91,6 @@ export default class Engine {
     this.tickListeners.forEach(e => e.wrapTick(elapsedTime))
     this.renderer.render(this.scene, this.camera)
     this.stats?.update()
-
-    window.requestAnimationFrame(() => this.executeTick())
   }
 
   addTickListener(element: GameElement) {
@@ -101,9 +105,9 @@ export default class Engine {
 const emptyAppInfo = (target: HTMLCanvasElement): AppInfo => ({
   target,
   sizes: {
-    width: target.clientWidth,
-    height: target.clientHeight
-  }
+    width: window.innerWidth,
+    height: window.innerHeight,
+  },
 })
 
 interface AppInfo {

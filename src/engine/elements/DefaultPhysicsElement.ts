@@ -5,12 +5,15 @@ import { threeToCannon } from 'three-to-cannon'
 import { bodyToMesh } from '../utils/bodyToMesh'
 
 export default class DefaultPhysicsElement extends GameElement {
-  private mesh: THREE.Object3D
-  private body: CANNON.Body
-  private bodyWireframe: THREE.Object3D
+  mesh: THREE.Object3D
+  body: CANNON.Body
+  bodyWireframe: THREE.Object3D
+  updateBodyToMesh = true
+  updatePosition = true
+  updateRotation = true
 
-  protected position = new THREE.Vector3()
-  protected rotation = new THREE.Euler()
+  position = new THREE.Vector3()
+  rotation = new THREE.Euler()
 
   constructor(mesh: THREE.Object3D, bodyOptions: any = {}) {
     super()
@@ -26,19 +29,24 @@ export default class DefaultPhysicsElement extends GameElement {
 
   onEnterScene() {
     const world = this.engine.getPhysicsWorld()
-    if(world) world.addBody(this.body)
+    if (world) world.addBody(this.body)
   }
 
   onExitScene() {
     const world = this.engine.getPhysicsWorld()
-    if(world) world.removeBody(this.body)
+    if (world) world.removeBody(this.body)
   }
 
   tick() {
-    this.setPosition(this.body, this.mesh)
-    this.setQuaternion(this.body, this.mesh)
+    if (this.updateBodyToMesh) {
+      if (this.updatePosition) this.setPosition(this.body, this.mesh)
+      if (this.updateRotation) this.setQuaternion(this.body, this.mesh)
+    } else {
+      if (this.updatePosition) this.setPosition(this.mesh, this.body)
+      if (this.updateRotation) this.setQuaternion(this.mesh, this.body)
+    }
 
-    if(this.bodyWireframe) {
+    if (this.bodyWireframe) {
       this.setPosition(this.body, this.bodyWireframe)
       this.setQuaternion(this.body, this.bodyWireframe)
     }
@@ -49,39 +57,49 @@ export default class DefaultPhysicsElement extends GameElement {
   }
 
   render() {
-    return [
-      this.mesh,
-      this.bodyWireframe
-    ]
+    return [this.mesh, this.bodyWireframe]
   }
 
-  private handleBody({wireframe, ...bodyOptions}: any) { 
+  private handleBody({
+    wireframe,
+    shape,
+    positionOffset,
+    quaternionOffset,
+    ...bodyOptions
+  }: any) {
     this.body = new CANNON.Body(bodyOptions)
 
-    if(!bodyOptions.shape) {
-      const {shape, offset, orientation} = threeToCannon(this.mesh as any)
-      this.body.addShape(shape, offset, orientation)
+    if (shape) {
+      this.body.addShape(shape, positionOffset, quaternionOffset)
+    } else {
+      const result = threeToCannon(this.mesh as any)
+      this.body.addShape(result.shape, result.offset, result.orientation)
     }
 
-    if(wireframe) {
-      this.bodyWireframe = bodyToMesh(this.body, new THREE.MeshBasicMaterial({wireframe: true}))
+    if (wireframe) {
+      this.bodyWireframe = bodyToMesh(
+        this.body,
+        new THREE.MeshBasicMaterial({ wireframe: true })
+      )
     }
   }
 
-  private setPosition(from: THREE.Object3D | CANNON.Body, to: THREE.Object3D | CANNON.Body) {
-    to.position.set(
-      from.position.x,
-      from.position.y,
-      from.position.z,
-    )
+  private setPosition(
+    from: THREE.Object3D | CANNON.Body,
+    to: THREE.Object3D | CANNON.Body
+  ) {
+    to.position.set(from.position.x, from.position.y, from.position.z)
   }
 
-  private setQuaternion(from: THREE.Object3D | CANNON.Body, to: THREE.Object3D | CANNON.Body) {
+  private setQuaternion(
+    from: THREE.Object3D | CANNON.Body,
+    to: THREE.Object3D | CANNON.Body
+  ) {
     to.quaternion.set(
       from.quaternion.x,
       from.quaternion.y,
       from.quaternion.z,
-      from.quaternion.w,
+      from.quaternion.w
     )
   }
 
@@ -93,23 +111,25 @@ export default class DefaultPhysicsElement extends GameElement {
         return true
       },
       get: (target, key: 'x' | 'y' | 'z') => {
-        if(!['x', 'y', 'z'].includes(key)) throw new Error('Somente é possível acessar as propriedades X, Y, Z.')
+        if (!['x', 'y', 'z'].includes(key))
+          throw new Error('Somente é possível acessar as propriedades X, Y, Z.')
         return target[key]
-      }
+      },
     })
   }
 
   private quaternionProxy() {
     return new Proxy(this.mesh.rotation, {
       set: (target, key: 'x' | 'y' | 'z', value) => {
-        target[key] = value    
+        target[key] = value
         this.setQuaternion(this.mesh, this.body)
         return true
       },
       get: (target, key: 'x' | 'y' | 'z') => {
-        if(!['x', 'y', 'z'].includes(key)) throw new Error('Somente é possível acessar as propriedades X, Y, Z.')
+        if (!['x', 'y', 'z'].includes(key))
+          throw new Error('Somente é possível acessar as propriedades X, Y, Z.')
         return target[key]
-      }
+      },
     })
   }
 }
