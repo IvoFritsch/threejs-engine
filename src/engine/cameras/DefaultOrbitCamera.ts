@@ -1,6 +1,6 @@
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import DefaultPerspectiveCamera from "./DefaultPerspectiveCamera";
-import Engine from "./Engine";
+import Engine from "../Engine";
 
 export default class DefaultOrbitCamera extends DefaultPerspectiveCamera {
 

@@ -1,5 +1,5 @@
 import Engine from './engine/Engine'
-import DefaultOrbitCamera from './engine/DefaultOrbitCamera'
+import DefaultOrbitCamera from './engine/cameras/DefaultOrbitCamera'
 import './style.css'
 import Base from '../examples/testePit/Base'
 
