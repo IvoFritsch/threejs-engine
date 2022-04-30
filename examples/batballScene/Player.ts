@@ -7,7 +7,10 @@ export default class Player extends GameElement {
     new THREE.BoxBufferGeometry(0.45, 1.6, 0.2),
     new THREE.MeshToonMaterial({ color: 0x00ff00 })
   )
-  private player = new DefaultPhysicsElement(this.playerMesh, { wireframe: true })
+  private player = new DefaultPhysicsElement(this.playerMesh, undefined, {
+    wireframe: true,
+    renderMesh: false,
+  })
 
   private onPlayerCollisionListeners: Function[] = []
 
@@ -15,8 +18,6 @@ export default class Player extends GameElement {
     super()
     this.playerMesh.visible = false
 
-    this.player.updateBodyToMesh = false
-    this.player.updatePosition = false
     this.player.position.y = this.playerMesh.geometry.parameters.height / 2
 
     this.player.body.addEventListener('collide', ({ body }: any) =>

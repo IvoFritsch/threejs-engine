@@ -57,14 +57,19 @@ export default class Dolly extends GameElement {
     const grip = this.webxr.getGrip()
     grip.add(bat)
 
-    this.state.grip = new DefaultPhysicsElement(grip, {
-      wireframe: true,
-      shape: new CANNON.Cylinder(0.06, 0.06, 1.33),
-      positionOffset: new CANNON.Vec3(0, 0, -0.48),
-      quaternionOffset: new CANNON.Quaternion(0.7068252, 0, 0, 0.7073883),
-    })
-    this.state.grip.updateBodyToMesh = false
-    this.state.grip.updatePosition = false
+    this.state.grip = new DefaultPhysicsElement(
+      grip,
+      {
+        shape: new CANNON.Cylinder(0.06, 0.06, 1.33),
+        positionOffset: new CANNON.Vec3(0, 0, -0.48),
+        quaternionOffset: new CANNON.Quaternion(0.7068252, 0, 0, 0.7073883),
+      },
+      {
+        wireframe: true,
+        updatePosition: false,
+        updateRotation: false,
+      }
+    )
 
     this.dolly.add(camera, player, this.state.grip.mesh)
   }
@@ -109,6 +114,13 @@ export default class Dolly extends GameElement {
         this.state.grip.mesh.position.x + this.dolly.position.x,
         this.state.grip.mesh.position.y + this.dolly.position.y,
         this.state.grip.mesh.position.z + this.dolly.position.z
+      )
+
+      this.state.grip.body.quaternion.set(
+        this.state.grip.mesh.quaternion.x,
+        this.state.grip.mesh.quaternion.y,
+        this.state.grip.mesh.quaternion.z,
+        this.state.grip.mesh.quaternion.w
       )
 
       this.player.body.position.set(
