@@ -25,10 +25,10 @@ const defaultOptions: DefaultPhysicsElementOptions = {
 }
 
 export default class DefaultPhysicsElement extends GameElement {
-  mesh: THREE.Object3D
-  body: CANNON.Body
-  meshWireframe: THREE.Object3D
-  options: DefaultPhysicsElementOptions
+  private mesh: THREE.Object3D
+  private body: CANNON.Body
+  private meshWireframe: THREE.Object3D
+  private options: DefaultPhysicsElementOptions
 
   position = new THREE.Vector3()
   rotation = new THREE.Euler()
@@ -81,6 +81,14 @@ export default class DefaultPhysicsElement extends GameElement {
     if (this.options.updateDirection === 'bodyToMesh')
       return { from: this.body, to: this.mesh }
     return { from: this.mesh, to: this.body }
+  }
+
+  getMesh() {
+    return this.mesh
+  }
+
+  getBody() {
+    return this.body
   }
 
   bodies() {

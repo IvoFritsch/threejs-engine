@@ -8,7 +8,7 @@ export default class Player extends GameElement {
     new THREE.MeshToonMaterial({ color: 0x00ff00 })
   ).translateY(0.8)
   private player = new DefaultPhysicsElement(this.playerMesh, undefined, {
-    wireframe: true,
+    wireframe: false,
     renderMesh: false,
     updatePosition: false,
     updateRotation: false,
@@ -20,9 +20,11 @@ export default class Player extends GameElement {
     super()
     this.playerMesh.visible = true
 
-    this.player.body.addEventListener('collide', ({ body }: any) =>
-      this.onPlayerCollisionListeners.forEach(listener => listener(body))
-    )
+    this.player
+      .getBody()
+      .addEventListener('collide', ({ body }: any) =>
+        this.onPlayerCollisionListeners.forEach(listener => listener(body))
+      )
   }
 
   onPlayerCollision(listener: Function) {

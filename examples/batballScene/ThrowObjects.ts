@@ -63,10 +63,12 @@ export default class ThrowObjects extends GameElement {
       const zDirection = this.camera.position.z - sphere.position.z
       const yDirection = this.getRandomBetween(0, playerHeight)
 
-      sphere.body.applyLocalImpulse(
-        new CANNON.Vec3(xDirection, yDirection, zDirection),
-        new CANNON.Vec3(0, 0, 0)
-      )
+      sphere
+        .getBody()
+        .applyLocalImpulse(
+          new CANNON.Vec3(xDirection, yDirection, zDirection),
+          new CANNON.Vec3(0, 0, 0)
+        )
 
       this.state.spheres = [...this.state.spheres, sphere]
 
@@ -109,8 +111,8 @@ export default class ThrowObjects extends GameElement {
       new THREE.Mesh(this.sphereGeometry, this.sphereMaterial),
       { mass: 1, shape: new CANNON.Sphere(radius) }
     )
-    sphere.mesh.scale.set(radius, radius, radius)
-    sphere.mesh.castShadow = true
+    sphere.getMesh().scale.set(radius, radius, radius)
+    sphere.getMesh().castShadow = true
 
     return sphere
   }

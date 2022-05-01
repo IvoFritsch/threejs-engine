@@ -59,14 +59,14 @@ export default class Dolly extends GameElement {
         quaternionOffset: new CANNON.Quaternion(0.7068252, 0, 0, 0.7073883),
       },
       {
-        wireframe: true,
+        wireframe: false,
         renderMesh: false,
         updatePosition: false,
         updateDirection: 'meshToBody',
       }
     )
 
-    this.dolly.add(this.camera, this.state.grip.mesh)
+    this.dolly.add(this.camera, this.state.grip.getMesh())
   }
 
   private checkDollyOutsideAllowedArea(elapsedTime: number) {
@@ -111,27 +111,28 @@ export default class Dolly extends GameElement {
 
   moveGrip() {
     if (!this.state.grip) return
-    this.state.grip.body.position.set(
-      this.state.grip.mesh.position.x + this.dolly.position.x,
-      this.state.grip.mesh.position.y + this.dolly.position.y,
-      this.state.grip.mesh.position.z + this.dolly.position.z
-    )
+    this.state.grip
+      .getBody()
+      .position.set(
+        this.state.grip.getMesh().position.x + this.dolly.position.x,
+        this.state.grip.getMesh().position.y + this.dolly.position.y,
+        this.state.grip.getMesh().position.z + this.dolly.position.z
+      )
   }
 
   movePlayer() {
     if (!this.camera) return
-    this.player.body.quaternion.set(
-      0,
-      this.camera.quaternion.y,
-      0,
-      this.camera.quaternion.w
-    )
+    this.player
+      .getBody()
+      .quaternion.set(0, this.camera.quaternion.y, 0, this.camera.quaternion.w)
 
-    this.player.body.position.set(
-      this.camera.position.x,
-      this.camera.position.y - this.player.mesh.position.y,
-      this.camera.position.z
-    )
+    this.player
+      .getBody()
+      .position.set(
+        this.camera.position.x,
+        this.camera.position.y - this.player.getMesh().position.y,
+        this.camera.position.z
+      )
   }
 
   render() {
