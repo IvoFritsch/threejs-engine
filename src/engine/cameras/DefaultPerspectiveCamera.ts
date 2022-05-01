@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import Engine from './Engine'
+import Engine from '../Engine'
 
 export default class DefaultPerspectiveCamera extends THREE.PerspectiveCamera {
 
