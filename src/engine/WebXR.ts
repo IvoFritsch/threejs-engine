@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js'
-import Engine from '../../src/engine/Engine'
+import Engine from './Engine'
 
 export default class WebXR {
   private renderer: THREE.WebGLRenderer
@@ -17,8 +17,7 @@ export default class WebXR {
   }
 
   getGrip() {
-    const grip = this.renderer.xr.getController(0)
-    return grip
+    return this.renderer.xr.getController(0)
   }
 
   onSessionStart(listener: Function) {

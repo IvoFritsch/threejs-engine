@@ -7,7 +7,7 @@ import Player from './Player'
 import Dolly from './Dolly'
 
 export default class ThrowObjects extends GameElement {
-  dolly: THREE.Object3D
+  camera: THREE.Camera
   player: DefaultPhysicsElement
   direction: '+x' | '-x' | '+z' | '-z'
   throwSphereTimeout: NodeJS.Timeout
@@ -22,13 +22,16 @@ export default class ThrowObjects extends GameElement {
   constructor(dolly: Dolly, player: Player, throwDirection: ThrowDirection) {
     super()
     this.player = player.getPlayer()
-    this.dolly = dolly.getDolly()
 
     throwDirection.onDirectionChange((direction: '+x' | '-x' | '+z' | '-z') =>
       this.onDirectionChange(direction)
     )
 
     dolly.onDollyOutsideAllowedArea(() => this.onPlayerOutsideAllowedArea())
+  }
+
+  onEnterScene() {
+    this.camera = this.engine.getCamera()
   }
 
   onDirectionChange(direction: '+x' | '-x' | '+z' | '-z') {
@@ -54,17 +57,18 @@ export default class ThrowObjects extends GameElement {
       const sphere = this.createSphere()
       this.setSpherePosition(sphere)
 
-      const playerHeight = (this.player.mesh as THREE.Mesh<THREE.BoxBufferGeometry>)
-        .geometry.parameters.height
+      const playerHeight = this.camera.position.y
 
-      const xDirection = this.dolly.position.x - sphere.position.x
-      const zDirection = this.dolly.position.z - sphere.position.z
+      const xDirection = this.camera.position.x - sphere.position.x
+      const zDirection = this.camera.position.z - sphere.position.z
       const yDirection = this.getRandomBetween(0, playerHeight)
 
-      sphere.body.applyLocalImpulse(
-        new CANNON.Vec3(xDirection, yDirection, zDirection),
-        new CANNON.Vec3(0, 0, 0)
-      )
+      sphere
+        .getBody()
+        .applyLocalImpulse(
+          new CANNON.Vec3(xDirection, yDirection, zDirection),
+          new CANNON.Vec3(0, 0, 0)
+        )
 
       this.state.spheres = [...this.state.spheres, sphere]
 
@@ -107,8 +111,8 @@ export default class ThrowObjects extends GameElement {
       new THREE.Mesh(this.sphereGeometry, this.sphereMaterial),
       { mass: 1, shape: new CANNON.Sphere(radius) }
     )
-    sphere.mesh.scale.set(radius, radius, radius)
-    sphere.mesh.castShadow = true
+    sphere.getMesh().scale.set(radius, radius, radius)
+    sphere.getMesh().castShadow = true
 
     return sphere
   }

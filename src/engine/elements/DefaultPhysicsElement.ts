@@ -4,20 +4,43 @@ import GameElement from './GameElement'
 import { threeToCannon } from 'three-to-cannon'
 import { bodyToMesh } from '../utils/bodyToMesh'
 
+interface BodyOptions extends CANNON.BodyOptions {
+  positionOffset?: CANNON.Vec3
+  quaternionOffset?: CANNON.Quaternion
+}
+
+interface DefaultPhysicsElementOptions {
+  renderMesh?: boolean
+  wireframe?: boolean
+  updatePosition?: boolean
+  updateRotation?: boolean
+  updateDirection?: 'bodyToMesh' | 'meshToBody'
+}
+
+const defaultOptions: DefaultPhysicsElementOptions = {
+  updateDirection: 'bodyToMesh',
+  updatePosition: true,
+  updateRotation: true,
+  renderMesh: true,
+}
+
 export default class DefaultPhysicsElement extends GameElement {
-  mesh: THREE.Object3D
-  body: CANNON.Body
-  bodyWireframe: THREE.Object3D
-  updateBodyToMesh = true
-  updatePosition = true
-  updateRotation = true
+  private mesh: THREE.Object3D
+  private body: CANNON.Body
+  private meshWireframe: THREE.Object3D
+  private options: DefaultPhysicsElementOptions
 
   position = new THREE.Vector3()
   rotation = new THREE.Euler()
 
-  constructor(mesh: THREE.Object3D, bodyOptions: any = {}) {
+  constructor(
+    mesh: THREE.Object3D,
+    bodyOptions: BodyOptions = {},
+    options: DefaultPhysicsElementOptions = {}
+  ) {
     super()
     this.mesh = mesh
+    this.options = { ...defaultOptions, ...options }
     this.handleBody(bodyOptions)
 
     this.setPosition(this.mesh, this.body)
@@ -38,18 +61,34 @@ export default class DefaultPhysicsElement extends GameElement {
   }
 
   tick() {
-    if (this.updateBodyToMesh) {
-      if (this.updatePosition) this.setPosition(this.body, this.mesh)
-      if (this.updateRotation) this.setQuaternion(this.body, this.mesh)
-    } else {
-      if (this.updatePosition) this.setPosition(this.mesh, this.body)
-      if (this.updateRotation) this.setQuaternion(this.mesh, this.body)
-    }
+    this.updateElements()
+    this.updateWireframe()
+  }
 
-    if (this.bodyWireframe) {
-      this.setPosition(this.body, this.bodyWireframe)
-      this.setQuaternion(this.body, this.bodyWireframe)
-    }
+  private updateElements() {
+    const { from, to } = this.getUpdateDirectionElements()
+    if (this.options.updatePosition) this.setPosition(from, to)
+    if (this.options.updateRotation) this.setQuaternion(from, to)
+  }
+
+  private updateWireframe() {
+    if (!this.meshWireframe) return
+    this.setPosition(this.body, this.meshWireframe)
+    this.setQuaternion(this.body, this.meshWireframe)
+  }
+
+  private getUpdateDirectionElements() {
+    if (this.options.updateDirection === 'bodyToMesh')
+      return { from: this.body, to: this.mesh }
+    return { from: this.mesh, to: this.body }
+  }
+
+  getMesh() {
+    return this.mesh
+  }
+
+  getBody() {
+    return this.body
   }
 
   bodies() {
@@ -57,16 +96,10 @@ export default class DefaultPhysicsElement extends GameElement {
   }
 
   render() {
-    return [this.mesh, this.bodyWireframe]
+    return [this.options.renderMesh && this.mesh, this.meshWireframe]
   }
 
-  private handleBody({
-    wireframe,
-    shape,
-    positionOffset,
-    quaternionOffset,
-    ...bodyOptions
-  }: any) {
+  private handleBody({ shape, positionOffset, quaternionOffset, ...bodyOptions }: any) {
     this.body = new CANNON.Body(bodyOptions)
 
     if (shape) {
@@ -76,8 +109,8 @@ export default class DefaultPhysicsElement extends GameElement {
       this.body.addShape(result.shape, result.offset, result.orientation)
     }
 
-    if (wireframe) {
-      this.bodyWireframe = bodyToMesh(
+    if (this.options.wireframe) {
+      this.meshWireframe = bodyToMesh(
         this.body,
         new THREE.MeshBasicMaterial({ wireframe: true })
       )
