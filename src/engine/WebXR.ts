@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js'
-import Engine from '../../src/engine/Engine'
+import Engine from './Engine'
 
 export default class WebXR {
   private renderer: THREE.WebGLRenderer

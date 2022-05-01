@@ -1,7 +1,8 @@
 import * as THREE from 'three'
 import GameElement from './elements/GameElement'
-import PhysicsWorld, { PhysicsWorldOptions } from './PhysicsWorld'
 import Stats from 'three/examples/jsm/libs/stats.module'
+import PhysicsWorld, { PhysicsWorldOptions } from './PhysicsWorld'
+import WebXR from './WebXR'
 
 export default class Engine {
   private physicsWorld: PhysicsWorld
@@ -11,6 +12,7 @@ export default class Engine {
   private renderer: THREE.WebGLRenderer
   private tickListeners: GameElement[] = []
   private stats: Stats
+  private webxr: WebXR
 
   private rootElement: GameElement = null
   private rootElementConstructor: typeof GameElement
@@ -32,6 +34,11 @@ export default class Engine {
     this.renderer.setSize(this.info.sizes.width, this.info.sizes.height)
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     this.clock = new THREE.Clock()
+  }
+
+  enableWebxr() {
+    this.webxr = new WebXR(this)
+    return this
   }
 
   enablePhysics(options: PhysicsWorldOptions) {
@@ -65,6 +72,10 @@ export default class Engine {
 
   getPhysicsWorld() {
     return this.physicsWorld
+  }
+
+  getWebxr() {
+    return this.webxr
   }
 
   start() {

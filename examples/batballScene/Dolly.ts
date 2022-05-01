@@ -4,8 +4,8 @@ import GameElement from '../../src/engine/elements/GameElement'
 import DefaultPhysicsElement from '../../src/engine/elements/DefaultPhysicsElement'
 import Bat from './Bat'
 import Player from './Player'
-import WebXR from './WebXR'
 import gsap from 'gsap'
+import WebXR from '../../src/engine/WebXR'
 
 export default class Dolly extends GameElement {
   private dolly = new THREE.Group()
@@ -22,14 +22,17 @@ export default class Dolly extends GameElement {
     grip: undefined,
   }
 
-  constructor(webxr: WebXR, player: Player, bat: Bat) {
+  constructor(player: Player, bat: Bat) {
     super()
-    this.webxr = webxr
     this.bat = bat
     this.player = player.getPlayer()
 
-    this.webxr.onSessionStart(() => this.onSessionStart())
     player.onPlayerCollision((body: CANNON.Body) => this.onPlayerCollision(body))
+  }
+
+  onEnterScene() {
+    this.webxr = this.engine.getWebxr()
+    this.webxr.onSessionStart(() => this.onSessionStart())
   }
 
   private onPlayerCollision(body: any) {
@@ -100,27 +103,35 @@ export default class Dolly extends GameElement {
   }
 
   tick(elapsedTime: number) {
+    gsap.ticker.tick()
     this.checkDollyOutsideAllowedArea(elapsedTime)
-    if (this.state.grip) {
-      this.state.grip.body.position.set(
-        this.state.grip.mesh.position.x + this.dolly.position.x,
-        this.state.grip.mesh.position.y + this.dolly.position.y,
-        this.state.grip.mesh.position.z + this.dolly.position.z
-      )
+    this.moveGrip()
+    this.movePlayer()
+  }
 
-      this.player.body.quaternion.set(
-        0,
-        this.camera.quaternion.y,
-        0,
-        this.camera.quaternion.w
-      )
+  moveGrip() {
+    if (!this.state.grip) return
+    this.state.grip.body.position.set(
+      this.state.grip.mesh.position.x + this.dolly.position.x,
+      this.state.grip.mesh.position.y + this.dolly.position.y,
+      this.state.grip.mesh.position.z + this.dolly.position.z
+    )
+  }
 
-      this.player.body.position.set(
-        this.camera.position.x,
-        this.camera.position.y - this.player.mesh.position.y,
-        this.camera.position.z
-      )
-    }
+  movePlayer() {
+    if (!this.camera) return
+    this.player.body.quaternion.set(
+      0,
+      this.camera.quaternion.y,
+      0,
+      this.camera.quaternion.w
+    )
+
+    this.player.body.position.set(
+      this.camera.position.x,
+      this.camera.position.y - this.player.mesh.position.y,
+      this.camera.position.z
+    )
   }
 
   render() {
