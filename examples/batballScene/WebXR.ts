@@ -17,8 +17,7 @@ export default class WebXR {
   }
 
   getGrip() {
-    const grip = this.renderer.xr.getController(0)
-    return grip
+    return this.renderer.xr.getController(0)
   }
 
   onSessionStart(listener: Function) {

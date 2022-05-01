@@ -11,6 +11,7 @@ export default class Dolly extends GameElement {
   private dolly = new THREE.Group()
   private webxr: WebXR
   private player: DefaultPhysicsElement
+  private camera: THREE.Camera
   private bat: Bat
   private collisionTween: gsap.core.Tween
 
@@ -24,8 +25,8 @@ export default class Dolly extends GameElement {
   constructor(webxr: WebXR, player: Player, bat: Bat) {
     super()
     this.webxr = webxr
-    this.player = player.getPlayer()
     this.bat = bat
+    this.player = player.getPlayer()
 
     this.webxr.onSessionStart(() => this.onSessionStart())
     player.onPlayerCollision((body: CANNON.Body) => this.onPlayerCollision(body))
@@ -40,22 +41,12 @@ export default class Dolly extends GameElement {
       x: `+=${x * force}`,
       z: `+=${z * force}`,
     })
-
-    // Change color of object that hit player
-    // for (const object of objectsToUpdate) {
-    //     if (body.shapes[0].body === object.body) {
-    //         object.mesh.material = new THREE.MeshToonMaterial({ color: 0xf1ba79 })
-    //         break
-    //     }
-    // }
   }
 
   private onSessionStart() {
-    const camera = this.engine.getCamera()
-    const player = this.player.mesh
-    const bat = this.bat.getBat()
+    this.camera = this.engine.getCamera()
     const grip = this.webxr.getGrip()
-    grip.add(bat)
+    grip.add(this.bat.getBat())
 
     this.state.grip = new DefaultPhysicsElement(
       grip,
@@ -72,15 +63,16 @@ export default class Dolly extends GameElement {
       }
     )
 
-    this.dolly.add(camera, player, this.state.grip.mesh)
+    this.dolly.add(this.camera, this.state.grip.mesh)
   }
 
   private checkDollyOutsideAllowedArea(elapsedTime: number) {
     if (
-      this.dolly.position.x <= 5 &&
-      this.dolly.position.x >= -5 &&
-      this.dolly.position.z <= 5 &&
-      this.dolly.position.z >= -5
+      !this.camera ||
+      (this.camera.position.x <= 5 &&
+        this.camera.position.x >= -5 &&
+        this.camera.position.z <= 5 &&
+        this.camera.position.z >= -5)
     )
       return
 
@@ -94,7 +86,7 @@ export default class Dolly extends GameElement {
   }
 
   private resetDollyPosition() {
-    this.collisionTween.kill()
+    this.collisionTween?.kill()
     this.dolly.position.z = 0
     this.dolly.position.x = 0
   }
@@ -109,7 +101,6 @@ export default class Dolly extends GameElement {
 
   tick(elapsedTime: number) {
     this.checkDollyOutsideAllowedArea(elapsedTime)
-
     if (this.state.grip) {
       this.state.grip.body.position.set(
         this.state.grip.mesh.position.x + this.dolly.position.x,
@@ -117,10 +108,17 @@ export default class Dolly extends GameElement {
         this.state.grip.mesh.position.z + this.dolly.position.z
       )
 
+      this.player.body.quaternion.set(
+        0,
+        this.camera.quaternion.y,
+        0,
+        this.camera.quaternion.w
+      )
+
       this.player.body.position.set(
-        this.player.mesh.position.x + this.dolly.position.x,
-        this.player.mesh.position.y + this.dolly.position.y,
-        this.player.mesh.position.z + this.dolly.position.z
+        this.camera.position.x,
+        this.camera.position.y - this.player.mesh.position.y,
+        this.camera.position.z
       )
     }
   }
