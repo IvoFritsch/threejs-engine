@@ -26,6 +26,7 @@ export default class Veiculo extends GameElement {
     pontoCurva.name = 'pontoCurva'
     model.rotateY(MathUtils.degToRad(-30))
     model.add(pontoCurva)
+    //model.add(this.engine.getCamera())
     //pontoCurva.position.setZ(model.getObjectByName('wheel_backLeft').position.z)
   })
 
@@ -107,8 +108,8 @@ export default class Veiculo extends GameElement {
         this.veiculo.getMesh().translateZ(-this.speed)
       }
       oldCarPosition.sub(this.veiculo.getMesh().position)
-      this.engine.getCamera().lookAt(this.veiculo.getMesh().position);
-      this.engine.getCamera().position.sub(oldCarPosition)
+      // this.engine.getCamera().lookAt(this.veiculo.getMesh().position);
+      //this.engine.getCamera().position.sub(oldCarPosition)
       this.veiculo.getMesh().getObjectByName('wheel_frontLeft').rotation.y = this.turnAngle
       this.veiculo.getMesh().getObjectByName('wheel_frontRight').rotation.y = this.turnAngle
     }

@@ -83,13 +83,15 @@ export default class Engine {
     const deltaElapsedTime = elapsedTime - this.lastElapsedTime
     this.lastElapsedTime = elapsedTime
 
-    if (this.camera.tick) {
+    if (this.camera && this.camera.tick) {
       this.camera.tick(elapsedTime)
     }
 
     this.physicsWorld?.tick(elapsedTime, deltaElapsedTime)
     this.tickListeners.forEach(e => e.wrapTick(elapsedTime))
-    this.renderer.render(this.scene, this.camera)
+    if(this.camera) {
+      this.renderer.render(this.scene, this.camera)
+    }
     this.stats?.update()
   }
 
