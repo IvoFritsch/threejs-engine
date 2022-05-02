@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { Object3D } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import LoadedElement, { OnLoadFunction } from './LoadedElement';
 import GameElement from "./GameElement";
 
 interface OnLoadProps {
@@ -10,47 +11,40 @@ interface OnLoadProps {
   }
 }
 
-export default class DefaultGLTFElement extends GameElement {
+export default class DefaultGLTFElement<T = Object3D> extends LoadedElement<T> {
 
   private static loader = new GLTFLoader();
 
   private path: string
-  private onLoad: (props: OnLoadProps) => THREE.Group | void
-  public isLoaded: boolean
+  private onLoad: OnLoadFunction<T>
   private state = {
-    mesh: null as Object3D
+    toRender: null as T
   }
 
-  constructor(path: string, onLoad?: (props: OnLoadProps) => THREE.Group | void) {
+  constructor(path: string, onLoad?: OnLoadFunction<T>) {
     super()
     this.path = path
     this.onLoad = onLoad
-  }
-
-  onEnterScene() {
     DefaultGLTFElement.loader.load(this.path, ({ scene: model }) => {
-      let putOnScene = model
+      let putOnScene: any = model
       if(this.onLoad) {
-        const ret = this.onLoad({ 
-          model, 
-          helpers: {
-            traverseMaterials: (c) => model.traverse((o: any) => o.material && c(o.material))
-          }
-        })
+        const ret = this.wrapOnLoad({ 
+          model
+        }, this.onLoad)
         if(ret) {
           putOnScene = ret
         }
       }
-      this.state.mesh = putOnScene
+      this.state.toRender = putOnScene
       this.isLoaded = true
     })
   }
 
-  getMesh() {
-    return this.state.mesh
+  get() {
+    return this.state.toRender
   }
 
   render() {
-    return [this.state.mesh]
+    return [this.state.toRender]
   }
 }

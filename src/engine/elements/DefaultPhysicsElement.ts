@@ -3,6 +3,7 @@ import * as CANNON from 'cannon-es'
 import GameElement from './GameElement'
 import { threeToCannon } from 'three-to-cannon'
 import { bodyToMesh } from '../utils/bodyToMesh'
+import LoadedElement, { OnLoadFunction } from './LoadedElement'
 
 interface BodyOptions extends CANNON.BodyOptions {
   positionOffset?: CANNON.Vec3
@@ -15,6 +16,7 @@ interface DefaultPhysicsElementOptions {
   updatePosition?: boolean
   updateRotation?: boolean
   updateDirection?: 'bodyToMesh' | 'meshToBody'
+  afterLoad?: OnLoadFunction
 }
 
 const defaultOptions: DefaultPhysicsElementOptions = {
@@ -34,20 +36,28 @@ export default class DefaultPhysicsElement extends GameElement {
   rotation = new THREE.Euler()
 
   constructor(
-    mesh: THREE.Object3D,
+    mesh: THREE.Object3D | LoadedElement,
     bodyOptions: BodyOptions = {},
     options: DefaultPhysicsElementOptions = {}
   ) {
     super()
-    this.mesh = mesh
-    this.options = { ...defaultOptions, ...options }
-    this.handleBody(bodyOptions)
+    if(mesh instanceof THREE.Object3D) {
+      this.mesh = mesh
+      this.continueConstruction(bodyOptions, options)
+    }
+  }
 
-    this.setPosition(this.mesh, this.body)
-    this.setQuaternion(this.mesh, this.body)
-
-    this.position = this.positionProxy()
-    this.rotation = this.quaternionProxy()
+  private continueConstruction(
+    bodyOptions: BodyOptions = {},
+    options: DefaultPhysicsElementOptions = {}) {
+      this.options = { ...defaultOptions, ...options }
+      this.handleBody(bodyOptions)
+  
+      this.setPosition(this.mesh, this.body)
+      this.setQuaternion(this.mesh, this.body)
+  
+      this.position = this.positionProxy()
+      this.rotation = this.quaternionProxy()
   }
 
   onEnterScene() {
@@ -88,10 +98,6 @@ export default class DefaultPhysicsElement extends GameElement {
   }
 
   getBody() {
-    return this.body
-  }
-
-  bodies() {
     return this.body
   }
 

@@ -1,6 +1,6 @@
 import GameElement from "../../src/engine/elements/GameElement";
 import * as THREE from 'three'
-import { MathUtils, Vector3 } from "three";
+import { MathUtils, Object3D, Vector3 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import DefaultGLTFElement from "../../src/engine/elements/DefaultGLTFElement";
 import { WhileDown, WhileUp } from "../../src/engine/controls/WhileKey";
@@ -26,8 +26,7 @@ export default class Veiculo extends GameElement {
     pontoCurva.name = 'pontoCurva'
     model.rotateY(MathUtils.degToRad(-30))
     model.add(pontoCurva)
-    //model.add(this.engine.getCamera())
-    //pontoCurva.position.setZ(model.getObjectByName('wheel_backLeft').position.z)
+    return model
   })
 
   speed = 0
@@ -89,29 +88,33 @@ export default class Veiculo extends GameElement {
     if(this.turnAngle < 0.001 && this.turnAngle > -0.001) this.turnAngle = 0
     this.turningAroundPoint.x = this.comprimentoVeiculo / Math.tan(-this.turnAngle)
     //this.turningAroundPoint.
-    this.veiculo.getMesh().getObjectByName('pontoCurva').position.x = this.comprimentoVeiculo / Math.tan(-this.turnAngle)
+    this.veiculo.get().getObjectByName('pontoCurva').position.x = this.comprimentoVeiculo / Math.tan(-this.turnAngle)
     //this.turningAroundPoint.x = this.veiculo.getMesh().getObjectByName('wheel_frontLeft').get
     //this.pontoCurva.position.copy(this.turningAroundPoint)
   }
 
   tick() {
     if(this.veiculo.isLoaded) {
-      const oldCarPosition = this.veiculo.getMesh().position.clone()
+      const oldCarPosition = this.veiculo.get().position.clone()
       if(this.turnAngle) {
         rotateAroundWorldPoint(
-          this.veiculo.getMesh(), 
-          this.veiculo.getMesh().getObjectByName('pontoCurva').getWorldPosition(new THREE.Vector3()), 
+          this.veiculo.get(), 
+          this.veiculo.get().getObjectByName('pontoCurva').getWorldPosition(new THREE.Vector3()), 
           new THREE.Vector3(0, 1, 0), 
           { distance: this.turnAngle > 0 ? this.speed : -this.speed}
         )
       } else {
-        this.veiculo.getMesh().translateZ(-this.speed)
+        this.veiculo.get().translateZ(-this.speed)
       }
-      oldCarPosition.sub(this.veiculo.getMesh().position)
+      if(this.speed > 0 && this.turnAngle) {
+        this.turnAngle -= this.turnAngle / 130
+        this.computeTurningAroundPoint()
+      }
+      oldCarPosition.sub(this.veiculo.get().position)
       // this.engine.getCamera().lookAt(this.veiculo.getMesh().position);
       //this.engine.getCamera().position.sub(oldCarPosition)
-      this.veiculo.getMesh().getObjectByName('wheel_frontLeft').rotation.y = this.turnAngle
-      this.veiculo.getMesh().getObjectByName('wheel_frontRight').rotation.y = this.turnAngle
+      this.veiculo.get().getObjectByName('wheel_frontLeft').rotation.y = this.turnAngle
+      this.veiculo.get().getObjectByName('wheel_frontRight').rotation.y = this.turnAngle
     }
   }
 
