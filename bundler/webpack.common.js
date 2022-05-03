@@ -1,10 +1,15 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path')
+const { getExamplesPages, generateIndexExamplePage } = require('./helpers')
+
+const { examplesEntries, examplesPages } = getExamplesPages()
+const indexExamplePage = generateIndexExamplePage()
 
 module.exports = {
-    entry: path.resolve(__dirname, '../src/script.ts'),
+    entry: {
+        ...examplesEntries
+    },
     output:
     {
         hashFunction: 'xxhash64',
@@ -13,79 +18,77 @@ module.exports = {
     },
     devtool: 'source-map',
     resolve: {
-      extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.tsx', '.ts', '.js'],
     },
     plugins:
-    [
-        new CopyWebpackPlugin({
-            patterns: [
-                { from: path.resolve(__dirname, '../static') }
-            ]
-        }),
-        new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, '../src/index.html'),
-            minify: true
-        }),
-        new MiniCSSExtractPlugin()
-    ],
+        [
+            new CopyWebpackPlugin({
+                patterns: [
+                    { from: path.resolve(__dirname, '../static') }
+                ]
+            }),
+            new MiniCSSExtractPlugin(),
+            indexExamplePage,
+            ...examplesPages
+        ],
     module:
     {
         rules:
-        [
-            // TYPESCRIPT
-            {
-              test: /\.tsx?$/,
-              use: 'ts-loader',
-              exclude: /node_modules/,
-            },
-            // HTML
-            {
-                test: /\.(html)$/,
-                use:
-                [
-                    'html-loader'
-                ]
-            },
-
-            // JS
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use:
-                [
-                    'babel-loader'
-                ]
-            },
-
-            // CSS
-            {
-                test: /\.css$/,
-                use:
-                [
-                    MiniCSSExtractPlugin.loader,
-                    'css-loader'
-                ]
-            },
-
-            // Images
-            {
-                test: /\.(jpg|png|gif|svg)$/,
-                type: 'asset/resource',
-                generator:
+            [
+                // TYPESCRIPT
                 {
-                    filename: 'assets/images/[hash][ext]'
-                }
-            },
-
-            // Fonts
-            {
-                test: /\.(ttf|eot|woff|woff2)$/,
-                type: 'asset/resource',
-                generator:
+                    test: /\.tsx?$/,
+                    use: 'ts-loader',
+                    exclude: /node_modules/,
+                },
+                // HTML
                 {
-                    filename: 'assets/fonts/[hash][ext]'
+                    test: /\.(html)$/,
+                    use:
+                        [
+                            'html-loader'
+                        ]
+                },
+
+                // JS
+                {
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use:
+                        [
+                            'babel-loader'
+                        ]
+                },
+
+                // CSS
+                {
+                    test: /\.css$/,
+                    use:
+                        [
+                            MiniCSSExtractPlugin.loader,
+                            'css-loader'
+                        ]
+                },
+
+                // Images
+                {
+                    test: /\.(jpg|png|gif|svg)$/,
+                    type: 'asset/resource',
+                    generator:
+                    {
+                        filename: 'assets/images/[hash][ext]'
+                    }
+                },
+
+                // Fonts
+                {
+                    test: /\.(ttf|eot|woff|woff2)$/,
+                    type: 'asset/resource',
+                    generator:
+                    {
+                        filename: 'assets/fonts/[hash][ext]'
+                    }
                 }
-            }
-        ]
+            ]
     }
 }

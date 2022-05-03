@@ -1,27 +1,23 @@
 import * as THREE from 'three'
-import GameElement from "../../src/engine/elements/GameElement"
+import GameElement from '../../src/engine/elements/GameElement'
 
 export default class Thunder extends GameElement {
-
   thunder = new THREE.PointLight(0x4d88ff, 25, 20)
   state = {
-    showThunder: true
+    showThunder: true,
   }
 
   constructor() {
     super()
 
     this.setCastShadow(true)
-    
+
     this.thunder.shadow.mapSize.width = 1024 * 2
     this.thunder.shadow.mapSize.height = 1024 * 2
     this.thunder.shadow.camera.near = 3
     this.thunder.shadow.camera.far = 5
     this.thunder.position.y = 5
     this.thunder.visible = false
-    document.getElementById('btn-thunder').addEventListener('click', () => {
-      this.state.showThunder = !this.state.showThunder
-    })
   }
 
   tick(elapsedTime: number) {
@@ -32,7 +28,7 @@ export default class Thunder extends GameElement {
       this.thunder.visible = true
       this.thunder.intensity = Math.random() * (200 - 5) + 5
       setTimeout(() => {
-          this.thunder.visible = false
+        this.thunder.visible = false
       }, Math.random() * (30 - 10) + 10)
     }
   }

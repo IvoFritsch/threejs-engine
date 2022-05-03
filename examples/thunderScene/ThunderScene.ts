@@ -1,23 +1,30 @@
-import GameElement from '../../src/engine/elements/GameElement';
-import Grave from './Grave';
+import GameElement from '../../src/engine/elements/GameElement'
+import Grave from './Grave'
 import * as THREE from 'three'
-import Tree from './Tree';
-import Thunder from './Thunder';
+import Tree from './Tree'
+import Thunder from './Thunder'
 
 export default class ThunderScene extends GameElement {
-
   trees = [
-    [-1.2, 2.3], [-0.6, 1], [0.5, 1.6], [1.3, 2.1], [1.22, 1.1],
-    [-1, -1], [0.2, -0.75], [1.1, -0.8], [0.5, -1.8], [-0.5, -1.9]
+    [-1.2, 2.3],
+    [-0.6, 1],
+    [0.5, 1.6],
+    [1.3, 2.1],
+    [1.22, 1.1],
+    [-1, -1],
+    [0.2, -0.75],
+    [1.1, -0.8],
+    [0.5, -1.8],
+    [-0.5, -1.9],
   ].map(p => new Tree(p))
-  
+
   grave = new Grave()
-  
+
   ambientLight = new THREE.AmbientLight(0xb9d5ff, 0.3)
 
   moonLight = (() => {
     const ret = new THREE.DirectionalLight(0xb9d5ff, 0.3)
-    ret.position.set(4, 5, - 2)
+    ret.position.set(4, 5, -2)
     ret.shadow.mapSize.width = 256
     ret.shadow.mapSize.height = 256
     ret.shadow.camera.near = 4
@@ -26,8 +33,8 @@ export default class ThunderScene extends GameElement {
   })()
 
   plane = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry(3, 5),
-      new THREE.MeshStandardMaterial({ color: 0x4e6a1b })
+    new THREE.PlaneBufferGeometry(3, 5),
+    new THREE.MeshStandardMaterial({ color: 0x4e6a1b })
   ).rotateX(-Math.PI * 0.5)
 
   thunder = new Thunder()
@@ -35,7 +42,7 @@ export default class ThunderScene extends GameElement {
   lightsOn = false
 
   state = {
-    showTrees: true
+    showTrees: true,
   }
 
   constructor() {
@@ -46,16 +53,6 @@ export default class ThunderScene extends GameElement {
 
   onEnterScene() {
     this.engine.getScene().fog = new THREE.Fog(0x000000, 0.1, 6)
-
-    const btnLuzesCallback = () => this.switchLights()
-    const btnTreesCallback = () => this.state.showTrees = !this.state.showTrees
-    document.getElementById('btn-luzes').addEventListener('click', btnLuzesCallback)
-    document.getElementById('btn-trees').addEventListener('click', btnTreesCallback)
-
-    return () => {
-      document.getElementById('btn-luzes').removeEventListener('click', btnLuzesCallback)
-      document.getElementById('btn-trees').removeEventListener('click', btnTreesCallback)
-    }
   }
 
   onExitScene() {
@@ -68,14 +65,13 @@ export default class ThunderScene extends GameElement {
   }
 
   render() {
-
     return [
       this.ambientLight,
       this.moonLight,
       this.grave,
       this.plane,
       this.thunder,
-      this.state.showTrees && this.trees
+      this.state.showTrees && this.trees,
     ]
   }
 }
