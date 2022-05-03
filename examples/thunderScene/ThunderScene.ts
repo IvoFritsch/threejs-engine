@@ -48,11 +48,13 @@ export default class ThunderScene extends GameElement {
   constructor() {
     super()
     this.setCastShadow(true)
-    this.setReceiveShadow(true)
+    this.setReceiveShadow(true);
+    (window as any).switchLights = () => this.switchLights();
+    (window as any).switchTrees = () => this.state.showTrees = !this.state.showTrees
   }
 
   onEnterScene() {
-    this.engine.getScene().fog = new THREE.Fog(0x000000, 0.1, 6)
+    this.engine.getScene().fog = new THREE.Fog(0x000000, 0.3, 8)
   }
 
   onExitScene() {

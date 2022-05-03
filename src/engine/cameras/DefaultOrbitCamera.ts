@@ -6,10 +6,10 @@ export default class DefaultOrbitCamera extends DefaultPerspectiveCamera {
 
   controls: OrbitControls
 
-  constructor(engine: Engine) {
+  constructor(engine: Engine, { position = { x:5, y:2, z: 5 } } = {}) {
     super(engine)
     this.controls = new OrbitControls( this, engine.info.target );
-    this.position.set( 5, 2, 5 );
+    this.position.set( position.x, position.y, position.z );
   }
 
   tick() {

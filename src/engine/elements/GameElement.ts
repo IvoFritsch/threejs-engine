@@ -34,6 +34,8 @@ export default class GameElement {
 
   private wrapRender() {
     if(!this.child.render) return
+    console.log(this.isInScene)
+    if(!this.isInScene) return
     const ret = this.child.render()
     this.sceneManipulator.applyRenderReturn(ret)
   }

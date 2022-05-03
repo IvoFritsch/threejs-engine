@@ -7,6 +7,6 @@ const canvas: HTMLCanvasElement = document.querySelector('canvas.webgl')
 
 const engine = new Engine(canvas, ThunderScene).enableStats()
 
-engine.setCamera(new DefaultOrbitCamera(engine))
+engine.setCamera(new DefaultOrbitCamera(engine, { position: { x: 2, y: 2, z: 0} }))
 
 engine.start()
