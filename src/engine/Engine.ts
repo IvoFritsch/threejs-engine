@@ -13,6 +13,7 @@ export default class Engine {
   private tickListeners: GameElement[] = []
   private stats: Stats
   private webxr: WebXR
+  public static currentAdjustMultiplier: number
 
   private rootElement: GameElement = null
   private rootElementConstructor: typeof GameElement
@@ -92,8 +93,8 @@ export default class Engine {
   private executeTick() {
     const elapsedTime = this.clock.getElapsedTime()
     const deltaElapsedTime = elapsedTime - this.lastElapsedTime
+    Engine.currentAdjustMultiplier = deltaElapsedTime / (1 / 60)
     this.lastElapsedTime = elapsedTime
-
     if (this.camera && this.camera.tick) {
       this.camera.tick(elapsedTime)
     }
@@ -129,4 +130,8 @@ interface AppInfo {
     readonly width: number
     readonly height: number
   }
+}
+
+export function adjustToTickTime(scalar: number) {
+  return scalar * Engine.currentAdjustMultiplier
 }

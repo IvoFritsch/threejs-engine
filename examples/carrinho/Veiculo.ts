@@ -6,6 +6,7 @@ import DefaultGLTFElement from "../../src/engine/elements/DefaultGLTFElement";
 import { WhileDown, WhileUp } from "../../src/engine/controls/WhileKey";
 import { rotateAroundWorldPoint } from "../../src/engine/utils/rotation";
 import DefaultOrbitCamera from "../../src/engine/cameras/DefaultOrbitCamera";
+import { adjustToTickTime } from "../../src/engine/Engine";
 
 export default class Veiculo extends GameElement {
 
@@ -43,28 +44,28 @@ export default class Veiculo extends GameElement {
 
   @WhileDown('w') front() {
     if(!this.veiculo.isLoaded) return
-    this.speed += 0.001
+    this.speed += adjustToTickTime(0.001)
     if(this.speed > this.topSpeed) this.speed = this.topSpeed
   }
 
   @WhileUp('w') stopFront() {
     if(!this.veiculo.isLoaded) return
     if(this.speed > 0) {
-      this.speed -= 0.0002
+      this.speed -= adjustToTickTime(0.0002)
       if(this.speed < 0) this.speed = 0
     }
   }
 
   @WhileDown('s') backwards() {
     if(!this.veiculo.isLoaded) return
-    this.speed -= 0.001
+    this.speed -= adjustToTickTime(0.001)
     if(this.speed < this.topSpeedBackwards) this.speed = this.topSpeedBackwards
   }
 
   @WhileUp('s') stopBackwards() {
     if(!this.veiculo.isLoaded) return
     if(this.speed < 0) {
-      this.speed += 0.0002
+      this.speed += adjustToTickTime(0.0002)
       if(this.speed > 0) this.speed = 0
     }
   }
@@ -73,13 +74,13 @@ export default class Veiculo extends GameElement {
   turningAroundPoint = new Vector3(0,0,0)
 
   @WhileDown('a') turnLeft() {
-    this.turnAngle += 0.013
+    this.turnAngle += adjustToTickTime(0.013)
     if(this.turnAngle > 0.45) this.turnAngle = 0.45
     this.computeTurningAroundPoint()
   }
   
   @WhileDown('d') turnRight() {
-    this.turnAngle -= 0.013
+    this.turnAngle -= adjustToTickTime(0.013)
     if(this.turnAngle < -0.45) this.turnAngle = -0.45
     this.computeTurningAroundPoint()
   }
@@ -95,24 +96,20 @@ export default class Veiculo extends GameElement {
 
   tick() {
     if(this.veiculo.isLoaded) {
-      const oldCarPosition = this.veiculo.get().position.clone()
       if(this.turnAngle) {
         rotateAroundWorldPoint(
           this.veiculo.get(), 
           this.veiculo.get().getObjectByName('pontoCurva').getWorldPosition(new THREE.Vector3()), 
           new THREE.Vector3(0, 1, 0), 
-          { distance: this.turnAngle > 0 ? this.speed : -this.speed}
+          { distance: adjustToTickTime(this.turnAngle > 0 ? this.speed : -this.speed)}
         )
       } else {
-        this.veiculo.get().translateZ(-this.speed)
+        this.veiculo.get().translateZ(adjustToTickTime(-this.speed))
       }
       if(this.speed > 0 && this.turnAngle) {
-        this.turnAngle -= this.turnAngle / 130
+        this.turnAngle -= adjustToTickTime(this.turnAngle / 60)
         this.computeTurningAroundPoint()
       }
-      oldCarPosition.sub(this.veiculo.get().position)
-      // this.engine.getCamera().lookAt(this.veiculo.getMesh().position);
-      //this.engine.getCamera().position.sub(oldCarPosition)
       this.veiculo.get().getObjectByName('wheel_frontLeft').rotation.y = this.turnAngle
       this.veiculo.get().getObjectByName('wheel_frontRight').rotation.y = this.turnAngle
     }
