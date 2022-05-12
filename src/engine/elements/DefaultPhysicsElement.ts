@@ -41,7 +41,7 @@ export default class DefaultPhysicsElement extends GameElement {
     options: DefaultPhysicsElementOptions = {}
   ) {
     super()
-    if(mesh instanceof THREE.Object3D) {
+    if (mesh instanceof THREE.Object3D) {
       this.mesh = mesh
       this.continueConstruction(bodyOptions, options)
     }
@@ -49,15 +49,16 @@ export default class DefaultPhysicsElement extends GameElement {
 
   private continueConstruction(
     bodyOptions: BodyOptions = {},
-    options: DefaultPhysicsElementOptions = {}) {
-      this.options = { ...defaultOptions, ...options }
-      this.handleBody(bodyOptions)
-  
-      this.setPosition(this.mesh, this.body)
-      this.setQuaternion(this.mesh, this.body)
-  
-      this.position = this.positionProxy()
-      this.rotation = this.quaternionProxy()
+    options: DefaultPhysicsElementOptions = {}
+  ) {
+    this.options = { ...defaultOptions, ...options }
+    this.handleBody(bodyOptions)
+
+    this.setPosition(this.mesh, this.body)
+    this.setQuaternion(this.mesh, this.body)
+
+    this.position = this.positionProxy()
+    this.rotation = this.quaternionProxy()
   }
 
   onEnterScene() {
