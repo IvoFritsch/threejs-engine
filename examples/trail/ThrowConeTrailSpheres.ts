@@ -9,6 +9,10 @@ interface Sphere {
 }
 
 export default class ThrowConeTrailSpheres extends GameElement {
+  debug = {
+    coneMultiplicator: 2,
+    force: 20,
+  }
   spheres: Sphere[] = []
   sphereGeometry = new THREE.SphereBufferGeometry(0.3)
   sphereMaterial = new THREE.MeshToonMaterial({ color: 0x333333 })
@@ -29,18 +33,36 @@ export default class ThrowConeTrailSpheres extends GameElement {
   }
 
   onEnterScene() {
-    this.throwSphere()
+    const gui = this.engine.getGui()
+    gui
+      .add(this.debug, 'coneMultiplicator')
+      .min(0)
+      .max(4)
+      .step(0.5)
+      .name('Multiplicador do cone')
+    gui.add(this.debug, 'force').min(0).max(100).step(1).name('Força da esfera com cone')
+    gui.add(this, 'throwSphere').name('Jogar esfera com cone')
+  }
+
+  getRandomArbitrary(min: number, max: number) {
+    return Math.random() * (max - min) + min
   }
 
   throwSphere() {
+    const xz = this.getRandomArbitrary(5, 8)
+    const y = this.getRandomArbitrary(1, 5)
+
     const sphereMesh = new THREE.Mesh(this.sphereGeometry, this.sphereMaterial)
-    sphereMesh.position.set(6, 3, 6)
+    sphereMesh.position.set(xz, y, xz)
 
     const sphere = new DefaultPhysicsElement(sphereMesh, { mass: 1 })
     sphere.getMesh().castShadow = true
     sphere
       .getBody()
-      .applyLocalImpulse(new CANNON.Vec3(-10, 3, -10), new CANNON.Vec3(0, 0, 0))
+      .applyLocalImpulse(
+        new CANNON.Vec3(-this.debug.force, 3, -this.debug.force),
+        new CANNON.Vec3(0, 0, 0)
+      )
 
     this.spheres.push({
       sphere,
@@ -58,7 +80,7 @@ export default class ThrowConeTrailSpheres extends GameElement {
       const velocity = s.sphere.getBody().velocity.clone().normalize()
       const mesh = s.sphere.getMesh()
       s.cone.visible = velocity >= 1
-      s.cone.scale.z = velocity * 2
+      s.cone.scale.z = velocity * this.debug.coneMultiplicator
       s.cone.lookAt(mesh.position)
       s.cone.position.copy(mesh.position)
     }

@@ -3,8 +3,10 @@ import GameElement from './elements/GameElement'
 import Stats from 'three/examples/jsm/libs/stats.module'
 import PhysicsWorld, { PhysicsWorldOptions } from './PhysicsWorld'
 import WebXR from './WebXR'
+import GUI from 'lil-gui'
 
 export default class Engine {
+  private gui: GUI
   private physicsWorld: PhysicsWorld
   private scene: THREE.Scene
   private clock: THREE.Clock
@@ -29,7 +31,7 @@ export default class Engine {
 
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.info.target,
-      antialias: true
+      antialias: true,
     })
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
@@ -55,6 +57,11 @@ export default class Engine {
     return this
   }
 
+  enableGUI() {
+    this.gui = new GUI()
+    return this
+  }
+
   setCamera(camera: THREE.Camera & { tick?: () => void }) {
     this.camera = camera
     return this
@@ -66,6 +73,10 @@ export default class Engine {
 
   getRenderer() {
     return this.renderer
+  }
+
+  getGui() {
+    return this.gui
   }
 
   getCamera() {
@@ -101,7 +112,7 @@ export default class Engine {
 
     this.physicsWorld?.tick(elapsedTime, deltaElapsedTime)
     this.tickListeners.forEach(e => e.wrapTick(elapsedTime))
-    if(this.camera) {
+    if (this.camera) {
       this.renderer.render(this.scene, this.camera)
     }
     this.stats?.update()

@@ -9,6 +9,7 @@ const canvas: HTMLCanvasElement = document.querySelector('canvas.webgl')
 
 const engine = new Engine(canvas, PhysicsTrailScene)
   .enablePhysics({ gravity: [0, -9.82, 0] })
+  .enableGUI()
   .enableStats()
 
 engine.setCamera(new DefaultOrbitCamera(engine))

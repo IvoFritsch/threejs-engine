@@ -9,6 +9,10 @@ interface Particle {
 }
 
 export default class ThrowParticleTrailSpheres extends GameElement {
+  debug = {
+    particles: 30,
+    force: 20,
+  }
   spheres: DefaultPhysicsElement[] = []
   sphereGeometry = new THREE.SphereBufferGeometry(0.3)
   sphereMaterial = new THREE.MeshToonMaterial({ color: 0x333333 })
@@ -25,7 +29,15 @@ export default class ThrowParticleTrailSpheres extends GameElement {
   }
 
   onEnterScene() {
-    // this.throwSphere()
+    const gui = this.engine.getGui()
+    gui.add(this.debug, 'particles').min(0).max(100).step(1).name('Número de particulas')
+    gui
+      .add(this.debug, 'force')
+      .min(0)
+      .max(100)
+      .step(1)
+      .name('Força da esfera com particulas')
+    gui.add(this, 'throwSphere').name('Jogar esfera com particulas')
   }
 
   createDefaultParticle() {
@@ -46,15 +58,25 @@ export default class ThrowParticleTrailSpheres extends GameElement {
     )
   }
 
+  getRandomArbitrary(min: number, max: number) {
+    return Math.random() * (max - min) + min
+  }
+
   throwSphere() {
+    const xz = this.getRandomArbitrary(5, 8)
+    const y = this.getRandomArbitrary(1, 5)
+
     const sphereMesh = new THREE.Mesh(this.sphereGeometry, this.sphereMaterial)
-    sphereMesh.position.set(6, 3, 6)
+    sphereMesh.position.set(xz, y, xz)
 
     const sphere = new DefaultPhysicsElement(sphereMesh, { mass: 1 })
     sphere.getMesh().castShadow = true
     sphere
       .getBody()
-      .applyLocalImpulse(new CANNON.Vec3(-10, 3, -10), new CANNON.Vec3(0, 0, 0))
+      .applyLocalImpulse(
+        new CANNON.Vec3(-this.debug.force, 3, -this.debug.force),
+        new CANNON.Vec3(0, 0, 0)
+      )
 
     this.spheres.push(sphere)
     this.requestRender()
@@ -72,7 +94,7 @@ export default class ThrowParticleTrailSpheres extends GameElement {
 
       particle.frame++
 
-      if (particle.frame >= 30) {
+      if (particle.frame >= this.debug.particles) {
         this.particles.splice(i, 1)
       }
     }
